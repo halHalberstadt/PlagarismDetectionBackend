@@ -29,7 +29,7 @@ public class DocumentReader {
     String extension;
     ArrayList<String> queries = new ArrayList<>();
 
-    DocumentReader() {
+    public DocumentReader() {
         // Create a license object to avoid limitations of the trial version
         // while reading the Word file
         try {
