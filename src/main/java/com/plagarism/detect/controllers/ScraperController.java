@@ -128,6 +128,7 @@ public class ScraperController {
       return query;
    }
 
+   @SuppressWarnings(value = { "unused" })
    private void testDocumentReader(){
       DocumentReader reader = new DocumentReader();
       ArrayList<String> fileLocations = findDocuments();
