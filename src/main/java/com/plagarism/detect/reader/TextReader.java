@@ -1,15 +1,81 @@
 package com.plagarism.detect.reader;
 
-public class TextReader{
+import java.util.ArrayList;
+
+/*
+ * This class should handle all basic text files and basic string entries. 
+ * Essentially, direct text enrty and .txt as they both take the same logic.
+ */
+public class TextReader {
 
     String body;
 
     /*
-     * Set Document sets up the question list and the path to the document
-     * we need to read.
-     * NOTE: This function requires the path to the document
+     * This should just handle reading .txt document sent in while word Document
+     * implementation is set up.
      */
     public void setDocument(String textBody) {
         this.body = textBody;
     }
+
+    /*
+     * Just returns body's text
+     */
+    public String getDocumentText() {
+        return this.body;
+    }
+
+    /*
+     * 
+     */
+    public boolean bodyFormattable() {
+        
+        return false;
+    }
+
+    /*
+     * 
+     */
+    public void formatBody() {
+        String bodyReplacement = "";
+
+        body = bodyReplacement;
+    }
+
+    /*
+     * findQuestions() will run through document items and store them into
+     * a list of strings.
+     */
+    public ArrayList<String> findOrderedQuestions() {
+        ArrayList<String> foundQuestions = new ArrayList<>();
+        // TODO search for each numbered list beggining then find last question mark
+        // before next
+
+        return null;
+    }
+
+    /*
+     * findQuestions() will run through document items and store them into
+     * a list of strings.
+     */
+    public ArrayList<String> findUnorderedQuestions() {
+        ArrayList<String> foundQuestions = new ArrayList<>();
+
+        int lastQuestion = 0;
+        String question = "";
+        // search for each line ending in '?'
+        for (int i = 1; i < body.length(); i++) {
+            if (body.charAt(i) == '?') {
+                question = body.substring(lastQuestion, i).trim();
+                // if question isn't empty, add to questions
+                if(question.length() > 0)
+                    foundQuestions.add(question);
+                // set question from last 
+                lastQuestion = i;
+            }
+        }
+
+        return foundQuestions;
+    }
+
 }
