@@ -16,6 +16,8 @@ public class ScraperController {
    // TODO reposiories if needed
 
    /*
+    * These are all GET requests since it is cheaper and more advantagous for
+    * our objective to just return data.
     * Endpoints:
     * 1. send scraper to search each query and return which queries return a
     * positive result
