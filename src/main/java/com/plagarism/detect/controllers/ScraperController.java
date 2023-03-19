@@ -104,6 +104,7 @@ public class ScraperController {
 
       // format response
       Queries queries = new Queries(listofQueries);
+      // return queries.toJSON();
       return queries;
    }
    

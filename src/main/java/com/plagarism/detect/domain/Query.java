@@ -2,8 +2,8 @@ package com.plagarism.detect.domain;
 
 public class Query {
 
-    private String queryText;
     private boolean foundOnline;
+    private String queryText;
 
     public Query() {
         this.queryText = "";
@@ -34,5 +34,12 @@ public class Query {
 
     public boolean getFoundOnline() {
         return foundOnline;
+    }
+
+    public String toJSON() {
+        String returnString = "{\n" + "\t\"foundOnline\": " + foundOnline + 
+        ",\n\t\"queryText\": \"" + queryText + "\"\n";
+        returnString += "\n}";
+        return returnString;
     }
 }
