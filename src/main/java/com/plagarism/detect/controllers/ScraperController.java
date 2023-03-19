@@ -10,8 +10,12 @@ import com.plagarism.detect.domain.QueryDTO;
 import com.plagarism.detect.reader.DocumentReader;
 import com.plagarism.detect.reader.TextReader;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,7 +25,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class ScraperController {
 
    // NOTE this needs to be changed once deployed
-   public static final String FILE_PATH = "C:\\Users\\smhal\\Documents\\Coding\\java\\docReader\\demo\\src\\main\\java\\com\\docs\\";
+   public static final String RELATIVE_FILE_PATH = "src\\main\\java\\com\\plagarism\\detect\\script\\";
+   public static final String EXACT_FILE_PATH = "C:\\Users\\smhal\\Documents\\Coding\\detect\\src\\main\\java\\com\\plagarism\\detect\\script\\";
 
    // TODO reposiories if needed
 
@@ -50,10 +55,20 @@ public class ScraperController {
       // Put scraper function here
       return foundOnChegg;
    }
+   
+   /*
+    * TODO
+    * getQueryResults
+    */
+   //runPythonScript
+   @GetMapping(value = "/scraperText")
+   public String getQueryResults() {
+      return runPythonScript();
+   }
 
    /*
     * TODO
-    * this is the document comparison endpoint. 
+    * this is the document comparison endpoint.
     */
    @GetMapping(value = "/compare")
    public void compareDocuments(@RequestBody Object param) {
@@ -65,7 +80,8 @@ public class ScraperController {
     * Add copy of this for request param
     */
    @GetMapping(value = "/text")
-   public ArrayList<String> textDocuemntReader(@RequestBody String document, @RequestParam("ordered") boolean orderedQuestions) {
+   public ArrayList<String> textDocuemntReader(@RequestBody String document,
+         @RequestParam("ordered") boolean orderedQuestions) {
       TextReader textReader = new TextReader();
       textReader.setDocument(document);
       ArrayList<String> questions;
@@ -87,7 +103,7 @@ public class ScraperController {
 
    /*
     * TODO
-    * this is an example return endpoint 
+    * this is an example return endpoint
     */
    @GetMapping(value = "/exampleQueries")
    public Queries exampleQueries() {
@@ -107,10 +123,10 @@ public class ScraperController {
       // return queries.toJSON();
       return queries;
    }
-   
+
    /*
     * TODO
-    * this is an example return endpoint 
+    * this is an example return endpoint
     */
    @GetMapping(value = "/exampleQuery")
    public Query exampleQuery() {
@@ -157,9 +173,10 @@ public class ScraperController {
     * b. QueryDTO -> Query
     */
 
-   private Query stringToQuery(String string){
-      
-      return null;
+   @SuppressWarnings(value = "unused")
+   private Query stringToQuery(String string) {
+      Query query = new Query(string);
+      return query;
    }
 
    private Queries useScraper(Queries quereies) {
@@ -182,6 +199,7 @@ public class ScraperController {
       return query;
    }
 
+   @SuppressWarnings(value = "unused")
    private void testDocumentReader() {
       DocumentReader reader = new DocumentReader();
       ArrayList<String> fileLocations = findDocuments();
@@ -213,7 +231,7 @@ public class ScraperController {
 
    private static ArrayList<String> findDocuments() {
       // Folder path and initialization of returned list
-      File folder = new File(FILE_PATH);
+      File folder = new File(EXACT_FILE_PATH);
       ArrayList<String> listOfFileLocations = new ArrayList<String>();
 
       // grab all the files
@@ -226,10 +244,57 @@ public class ScraperController {
             // are grabbed
 
             // Need to format the file location to get all exact paths
-            listOfFileLocations.add(FILE_PATH + listOfFiles[i].getName());
+            listOfFileLocations.add(EXACT_FILE_PATH + listOfFiles[i].getName());
          }
       }
 
       return listOfFileLocations;
+   }
+
+   private String runPythonScript() {
+      // ProcessBuilder processBuilder = new ProcessBuilder("python", FILE_PATH +
+      // "webScraper.py");
+      // processBuilder.redirectErrorStream(true);
+
+      // Process process = processBuilder.start();
+      // List<String> results = readProcessOutput(process.getInputStream());
+
+      // // results;
+
+      // int exitCode = process.waitFor();
+      // assertEquals("No errors should be detected", 0, exitCode);
+
+      String returnString = "";
+      try {
+         // using the Runtime exec method:
+         String s = "";
+         Process p = Runtime.getRuntime().exec("python " + EXACT_FILE_PATH + "webScraper.py");
+
+         BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
+
+         BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+
+         // read the output from the command
+         System.out.println("Here is the standard output of the command:\n");
+         while ((s = stdInput.readLine()) != null) {
+            returnString += s;
+            // System.out.println(s);
+         }
+
+         // read any errors from the attempted command
+         // System.out.println("Here is the standard error of the command (if any):\n");
+         // while ((s = stdError.readLine()) != null) {
+         //    System.out.println(s);
+         // }
+
+         // System.exit(0);
+      } catch (IOException e) {
+         System.out.println("exception happened - here's what I know: ");
+         e.printStackTrace();
+         System.exit(-1);
+      }
+      
+
+      return returnString;
    }
 }
