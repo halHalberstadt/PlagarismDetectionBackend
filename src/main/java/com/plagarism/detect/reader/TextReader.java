@@ -28,14 +28,6 @@ public class TextReader {
     /*
      * 
      */
-    public boolean bodyFormattable() {
-        
-        return false;
-    }
-
-    /*
-     * 
-     */
     public void formatBody() {
         String bodyReplacement = "";
 
@@ -45,18 +37,29 @@ public class TextReader {
     /*
      * findQuestions() will run through document items and store them into
      * a list of strings.
+     * TODO Remove warning supression once implemented
      */
+    @SuppressWarnings(value = {"unused"})
     public ArrayList<String> findOrderedQuestions() {
         ArrayList<String> foundQuestions = new ArrayList<>();
-        // TODO search for each numbered list beggining then find last question mark
-        // before next
-
-        return null;
+        
+        int lastQuestion = 0;
+        String question = "";
+        // search for each line ending in '?'
+        for (int i = 1; i < body.length(); i++) {
+            if (body.charAt(i) == '.') {
+                int queryEnd = body.indexOf("?", i);
+                question = body.substring(i+1, queryEnd).trim();
+                foundQuestions.add(question);
+                i = queryEnd;
+            }
+        }
+        return foundQuestions;
     }
 
     /*
      * findQuestions() will run through document items and store them into
-     * a list of strings.
+     * a list of strings. The strings 
      */
     public ArrayList<String> findUnorderedQuestions() {
         ArrayList<String> foundQuestions = new ArrayList<>();
@@ -67,6 +70,11 @@ public class TextReader {
         for (int i = 1; i < body.length(); i++) {
             if (body.charAt(i) == '?') {
                 question = body.substring(lastQuestion, i).trim();
+                if(question.startsWith("?\r\n")){
+                    question = question.substring(3);
+                } else if (question.startsWith("\r\n")){
+                    question = question.substring(2);
+                }
                 // if question isn't empty, add to questions
                 if(question.length() > 0)
                     foundQuestions.add(question);
@@ -77,5 +85,6 @@ public class TextReader {
 
         return foundQuestions;
     }
+    
 
 }

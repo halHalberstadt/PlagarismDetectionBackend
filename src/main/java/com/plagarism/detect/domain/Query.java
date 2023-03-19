@@ -6,13 +6,18 @@ public class Query {
     private boolean foundOnline;
 
     public Query() {
-        queryText = "";
-        foundOnline = false;
+        this.queryText = "";
+        this.foundOnline = false;
     }
 
     public Query(String question) {
-        queryText = question;
-        foundOnline = false;
+        this.queryText = question;
+        this.foundOnline = false;
+    }
+
+    public Query(Boolean isFound, String question) {
+        this.queryText = question;
+        this.foundOnline = isFound;
     }
 
     public void setQueryText(String text) {
