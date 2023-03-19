@@ -8,19 +8,21 @@ import com.plagarism.detect.domain.QueriesDTO;
 import com.plagarism.detect.domain.Query;
 import com.plagarism.detect.domain.QueryDTO;
 import com.plagarism.detect.reader.DocumentReader;
+import com.plagarism.detect.reader.TextReader;
 
 import java.io.File;
 import java.util.ArrayList;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 public class ScraperController {
 
    // NOTE this needs to be changed once deployed
    public static final String FILE_PATH = "C:\\Users\\smhal\\Documents\\Coding\\java\\docReader\\demo\\src\\main\\java\\com\\docs\\";
-   
+
    // TODO reposiories if needed
 
    /*
@@ -51,6 +53,7 @@ public class ScraperController {
 
    /*
     * TODO
+    * this is the document comparison endpoint. 
     */
    @GetMapping(value = "/compare")
    public void compareDocuments(@RequestBody Object param) {
@@ -59,10 +62,19 @@ public class ScraperController {
 
    /*
     * TODO
+    * Add copy of this for request param
     */
    @GetMapping(value = "/text")
-   public Queries textDocuemntReader(@RequestBody String document) {
-      return null;
+   public ArrayList<String> textDocuemntReader(@RequestBody String document, @RequestParam("ordered") boolean orderedQuestions) {
+      TextReader textReader = new TextReader();
+      textReader.setDocument(document);
+      ArrayList<String> questions;
+      if (orderedQuestions) {
+         questions = textReader.findOrderedQuestions();
+      } else {
+         questions = textReader.findUnorderedQuestions();
+      }
+      return questions;
    }
 
    /*
@@ -71,6 +83,41 @@ public class ScraperController {
    @GetMapping(value = "/word")
    public Queries wordDocuemntReader(@RequestBody String document) {
       return null;
+   }
+
+   /*
+    * TODO
+    * this is an example return endpoint 
+    */
+   @GetMapping(value = "/exampleQueries")
+   public Queries exampleQueries() {
+      Query example;
+      ArrayList<Query> listofQueries = new ArrayList<>();
+      for (int i = 0; i < 5; i++) {
+         example = new Query();
+         example.setFoundOnline(false);
+         example.setQueryText("Exampe Question #" + i + "?");
+
+         // System.out.println("out =>" + example);
+         listofQueries.add(example);
+      }
+
+      // format response
+      Queries queries = new Queries(listofQueries);
+      // return queries.toJSON();
+      return queries;
+   }
+   
+   /*
+    * TODO
+    * this is an example return endpoint 
+    */
+   @GetMapping(value = "/exampleQuery")
+   public Query exampleQuery() {
+      Query example = new Query();
+      example.setFoundOnline(false);
+      example.setQueryText("Example Text single query");
+      return example;
    }
 
    /*
@@ -98,6 +145,7 @@ public class ScraperController {
     */
    @GetMapping(value = "/error")
    public String error() {
+      System.err.println("Error called");
       return "Sorry, an error occured";
    }
 
@@ -108,6 +156,12 @@ public class ScraperController {
     * a. QueriesDTO -> Queries
     * b. QueryDTO -> Query
     */
+
+   private Query stringToQuery(String string){
+      
+      return null;
+   }
+
    private Queries useScraper(Queries quereies) {
       return null;
    }
@@ -128,7 +182,7 @@ public class ScraperController {
       return query;
    }
 
-   private void testDocumentReader(){
+   private void testDocumentReader() {
       DocumentReader reader = new DocumentReader();
       ArrayList<String> fileLocations = findDocuments();
 
@@ -156,7 +210,7 @@ public class ScraperController {
          // }
       }
    }
-   
+
    private static ArrayList<String> findDocuments() {
       // Folder path and initialization of returned list
       File folder = new File(FILE_PATH);
@@ -167,15 +221,15 @@ public class ScraperController {
 
       // grab all the files and dir at the location, then put them into the list
       for (int i = 0; i < listOfFiles.length; i++) {
-          if (listOfFiles[i].isFile()) {
-              // System.out.println(listOfFiles[i].getName()); // check to make sure all files
-              // are grabbed
+         if (listOfFiles[i].isFile()) {
+            // System.out.println(listOfFiles[i].getName()); // check to make sure all files
+            // are grabbed
 
-              // Need to format the file location to get all exact paths
-              listOfFileLocations.add(FILE_PATH + listOfFiles[i].getName());
-          }
+            // Need to format the file location to get all exact paths
+            listOfFileLocations.add(FILE_PATH + listOfFiles[i].getName());
+         }
       }
 
       return listOfFileLocations;
-  }
+   }
 }

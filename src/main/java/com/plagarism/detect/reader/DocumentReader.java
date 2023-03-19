@@ -4,20 +4,12 @@ import com.aspose.words.Document;
 import com.aspose.words.License;
 import com.aspose.words.NodeType;
 import com.aspose.words.Paragraph;
-// import com.aspose.words.Run;
 import com.aspose.words.SaveFormat;
-import org.apache.pdfbox.pdmodel.PDDocument;
-// import org.apache.pdfbox.pdmodel.PDDocumentInformation;
-// import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 
-// import org.apache.pdfbox.*;
-
-import java.io.File;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+
 // imports for regex
-// import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,7 +33,7 @@ public class DocumentReader {
         }
     }
 
-    DocumentReader(String documentPath) {
+    public DocumentReader(String documentPath) {
         // Create a license object to avoid limitations of the trial version
         // while reading the Word file
         try {
@@ -70,41 +62,31 @@ public class DocumentReader {
         } catch (Exception e) {
             this.path = "[NOT SUPPORTED] " + documentPath;
             // Specifies if failure is due to unsupported types or other.
-            if (e.getMessage().contains("Pdf format is not supported on this platform. Use .NET Standard")) {
-                System.err.println("com.reader.SetDocumentReaderException: File Not Supported. " +
-                        "Nested Error: " + e);
-//                try {
-//                    this.setPDFDocument(documentPath);
-//                } catch (Exception exception){
-//                    System.out.println(exception);
-//                }
-            } else {
                 System.err.println("com.reader.SetDocumentReaderException: Error setting up document text. " +
                         "Nested Error: " + e); // make sure to print the error
-            }
         }
 
     }
 
     /*
-     * NOTE: PDF Documents need to be unencrypted.
+     * NOTE: removed since PDF's are too difficult to parse at this time.
      */
-    public void setPDFDocument(String path) throws IOException {
-        File file = new File(path);
-        PDDocument doc = new PDDocument();
-        try
-        {
-            doc = PDDocument.load(file);
-            System.out.println("PDF initialized " );
+    // public void setPDFDocument(String path) throws IOException {
+    //     File file = new File(path);
+    //     PDDocument doc = new PDDocument();
+    //     try
+    //     {
+    //         doc = PDDocument.load(file);
+    //         System.out.println("PDF initialized " );
 
-        } finally
-        {
-            if( doc != null )
-            {
-                doc.close();
-            }
-        }
-    }
+    //     } finally
+    //     {
+    //         if( doc != null )
+    //         {
+    //             doc.close();
+    //         }
+    //     }
+    // }
 
     /*
      * readDocument is meant to just read out what the document has without formatting.
