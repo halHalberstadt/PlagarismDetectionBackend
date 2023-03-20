@@ -272,13 +272,13 @@ public class ScraperController {
 
          BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
 
-         BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+         // BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 
          // read the output from the command
          System.out.println("Here is the standard output of the command:\n");
          while ((s = stdInput.readLine()) != null) {
             returnString += s;
-            // System.out.println(s);
+            System.out.println(s);
          }
 
          // read any errors from the attempted command
