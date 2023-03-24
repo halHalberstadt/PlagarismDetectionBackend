@@ -9,13 +9,13 @@ import com.plagarism.detect.domain.Query;
 import com.plagarism.detect.domain.QueryDTO;
 import com.plagarism.detect.reader.DocumentReader;
 import com.plagarism.detect.reader.TextReader;
+import com.plagarism.detect.script.webScraper;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -48,21 +48,34 @@ public class ScraperController {
     * TODO
     * getQueryResults
     */
-   @GetMapping(value = "/scraper")
+   @GetMapping(value = "/scraperQueries")
    public Queries getQueryResults(@RequestBody QueriesDTO queries) {
       Queries newQueries = queriesDTOtoQueries(queries);
       Queries foundOnChegg = useScraper(newQueries);
+      webScraper scraper = new webScraper();
+      scraper.searchForRequests();
       // Put scraper function here
       return foundOnChegg;
    }
-   
+
    /*
     * TODO
-    * getQueryResults
+    * getQueryResultsTest
     */
-   //runPythonScript
+   @GetMapping(value = "/scraper")
+   public void getQueryResultsTest() {
+      // run the java script
+      webScraper scraper = new webScraper();
+      scraper.searchForRequests();
+   }
+
+   /*
+    * TODO
+    * getQueryResultsPython
+    */
    @GetMapping(value = "/scraperText")
-   public String getQueryResults() {
+   public String getQueryResultsPython() {
+      // run the Python script
       return runPythonScript();
    }
 
@@ -272,7 +285,8 @@ public class ScraperController {
 
          BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
 
-         // BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+         // BufferedReader stdError = new BufferedReader(new
+         // InputStreamReader(p.getErrorStream()));
 
          // read the output from the command
          System.out.println("Here is the standard output of the command:\n");
@@ -284,7 +298,7 @@ public class ScraperController {
          // read any errors from the attempted command
          // System.out.println("Here is the standard error of the command (if any):\n");
          // while ((s = stdError.readLine()) != null) {
-         //    System.out.println(s);
+         // System.out.println(s);
          // }
 
          // System.exit(0);
@@ -293,7 +307,6 @@ public class ScraperController {
          e.printStackTrace();
          System.exit(-1);
       }
-      
 
       return returnString;
    }
