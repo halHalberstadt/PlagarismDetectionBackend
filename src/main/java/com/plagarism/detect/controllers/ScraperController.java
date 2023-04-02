@@ -13,6 +13,7 @@ import com.plagarism.detect.script.webScraper;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -70,27 +71,46 @@ public class ScraperController {
    }
 
    /*
-    * TODO
     * getQueryResultsPython
     */
    @GetMapping(value = "/scraperText")
-   public String getQueryResultsPython() {
+   public String getQueryResultsPython(@RequestBody Queries text) {
+      writeQuestionsToFile(text);
       // run the Python script
       return runPythonScript();
    }
 
+   private boolean writeQuestionsToFile(Queries questions){
+        try {
+            FileWriter myWriter = new FileWriter("../script/questions.txt");
+            myWriter.write(""); // clear the file so no previous questions are there
+
+            for (Query question : questions.getQueries()) {
+               // '\n' needed to separate questions
+                myWriter.append(question.getQueryText() + "\n");
+            }
+
+            myWriter.close();
+            return true;
+          } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+          }
+
+        return false;
+    }
+
    /*
-    * TODO
-    * this is the document comparison endpoint.
+    * TODO finish endpoint
+    * this is the document comparison endpoint. (in progress)
     */
-   @GetMapping(value = "/compare")
-   public void compareDocuments(@RequestBody Object param) {
+   // @GetMapping(value = "/compare")
+   // public void compareDocuments(@RequestBody Object param) {
 
-   }
+   // }
 
    /*
-    * TODO
-    * Add copy of this for request param
+    * TODO Add copy of this for request param
     */
    @GetMapping(value = "/text")
    public ArrayList<String> textDocuemntReader(@RequestBody String document,
@@ -116,7 +136,7 @@ public class ScraperController {
 
    /*
     * TODO
-    * this is an example return endpoint
+    * this is an example Queries return endpoint
     */
    @GetMapping(value = "/exampleQueries")
    public Queries exampleQueries() {
@@ -139,7 +159,7 @@ public class ScraperController {
 
    /*
     * TODO
-    * this is an example return endpoint
+    * this is an example Query return endpoint
     */
    @GetMapping(value = "/exampleQuery")
    public Query exampleQuery() {

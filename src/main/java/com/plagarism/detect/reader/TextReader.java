@@ -1,8 +1,5 @@
 package com.plagarism.detect.reader;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 
 /*
@@ -44,7 +41,6 @@ public class TextReader {
     public ArrayList<String> findOrderedQuestions() {
         ArrayList<String> foundQuestions = new ArrayList<>();
         
-        int lastQuestion = 0;
         String question = "";
         // search for each line ending in '?'
         for (int i = 1; i < body.length(); i++) {
@@ -87,22 +83,4 @@ public class TextReader {
         return foundQuestions;
     }
     
-    private boolean writeQuestionsToFile(){
-        try {
-            FileWriter myWriter = new FileWriter("../script/questions.txt");
-            myWriter.write(""); // clear the file so no previous questions are there
-
-            for (iterable_type iterable_element : iterable) {
-                
-            }
-
-            myWriter.close();
-            System.out.println("Successfully wrote to the file.");
-          } catch (IOException e) {
-            System.out.println("An error occurred.");
-            e.printStackTrace();
-          }
-
-        return false;
-    }
 }
