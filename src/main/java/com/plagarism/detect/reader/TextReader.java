@@ -1,5 +1,8 @@
 package com.plagarism.detect.reader;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /*
@@ -37,9 +40,7 @@ public class TextReader {
     /*
      * findQuestions() will run through document items and store them into
      * a list of strings.
-     * TODO Remove warning supression once implemented
      */
-    @SuppressWarnings(value = {"unused"})
     public ArrayList<String> findOrderedQuestions() {
         ArrayList<String> foundQuestions = new ArrayList<>();
         
@@ -86,5 +87,22 @@ public class TextReader {
         return foundQuestions;
     }
     
+    private boolean writeQuestionsToFile(){
+        try {
+            FileWriter myWriter = new FileWriter("../script/questions.txt");
+            myWriter.write(""); // clear the file so no previous questions are there
 
+            for (iterable_type iterable_element : iterable) {
+                
+            }
+
+            myWriter.close();
+            System.out.println("Successfully wrote to the file.");
+          } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+          }
+
+        return false;
+    }
 }

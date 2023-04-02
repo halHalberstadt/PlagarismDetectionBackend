@@ -186,7 +186,6 @@ public class ScraperController {
     * b. QueryDTO -> Query
     */
 
-   @SuppressWarnings(value = "unused")
    private Query stringToQuery(String string) {
       Query query = new Query(string);
       return query;
@@ -265,17 +264,6 @@ public class ScraperController {
    }
 
    private String runPythonScript() {
-      // ProcessBuilder processBuilder = new ProcessBuilder("python", FILE_PATH +
-      // "webScraper.py");
-      // processBuilder.redirectErrorStream(true);
-
-      // Process process = processBuilder.start();
-      // List<String> results = readProcessOutput(process.getInputStream());
-
-      // // results;
-
-      // int exitCode = process.waitFor();
-      // assertEquals("No errors should be detected", 0, exitCode);
 
       String returnString = "";
       try {
@@ -285,6 +273,7 @@ public class ScraperController {
 
          BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
 
+         // (kept just in case errors are needed for debug)
          // BufferedReader stdError = new BufferedReader(new
          // InputStreamReader(p.getErrorStream()));
 
@@ -295,7 +284,7 @@ public class ScraperController {
             System.out.println(s);
          }
 
-         // read any errors from the attempted command
+         // read any errors from the attempted command (kept just in case errors are needed for debug)
          // System.out.println("Here is the standard error of the command (if any):\n");
          // while ((s = stdError.readLine()) != null) {
          // System.out.println(s);
@@ -303,7 +292,7 @@ public class ScraperController {
 
          // System.exit(0);
       } catch (IOException e) {
-         System.out.println("exception happened - here's what I know: ");
+         System.out.println("exception happened: ");
          e.printStackTrace();
          System.exit(-1);
       }

@@ -106,7 +106,7 @@ public class DocumentReader {
         System.out.println("done reading \"" + path + "\"");
     }
 
-    /* TODO finish comment
+    /* TODO finish commenting
      * getDocumentText() this method returns a arrayList of the entire document's text
      * with each line being a entry to the document text.
      */
