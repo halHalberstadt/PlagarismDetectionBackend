@@ -1,5 +1,10 @@
 package com.plagarism.detect.script;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
@@ -7,11 +12,14 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
+import com.plagarism.detect.domain.Queries;
+import com.plagarism.detect.reader.TextReader;
+
 /*
  * This class is an adaptation of a python web scraper.
  */
 public class webScraper {
-
+ 
     public WebDriver driver;
 
     final String BASE_URL = "https://www.google.com/";
@@ -32,20 +40,16 @@ public class webScraper {
     /*
      * 
      */
-    public void searchForRequests() {
-        System.setProperty("webdriver.gecko.driver", "C:\\geckodriver.exe");
+    public List<String> searchForRequests() {
         WebDriver driver = new FirefoxDriver();
-        // comment the above 2 lines and uncomment below 2 lines to use Chrome
-        // System.setProperty("webdriver.chrome.driver","G:\\chromedriver.exe");
-        // WebDriver driver = new ChromeDriver();
 
         String baseUrl = "https://www.google.com/search?q=";
-        String expectedText = "";
+        String expectedText = "Chegg.com";
         String actualText = "";
 
         driver.get(baseUrl);
 
-        WebElement textBox = driver.findElement(By.className("LC20lb MBeuO DKV0Md"));
+        List<WebElement> textBox = driver.findElements(By.className("LC20lb MBeuO DKV0Md"));
 
         // actualTitle = driver.getTitle();
 
@@ -54,10 +58,10 @@ public class webScraper {
         // } else {
         // System.out.println("Test Failed");
         // }
-        System.out.println(textBox);
-
+        System.out.println(textBox.get(0).getText());
         // close Fire fox
         driver.close();
+        return formatResponses(textBox);
     }
 
     // Private methods
@@ -65,28 +69,49 @@ public class webScraper {
     /*
      * 
      */
-    private void formatResponses() {
+    private Queries loadTxtData() throws Exception{
+        Queries queries = new Queries();
+        BufferedReader reader;
 
+        reader = new BufferedReader(new FileReader("questions.txt"));
+        String line = reader.readLine();
+
+        while (line != null) {
+            queries.addQuery(false, line);
+            System.out.println(line);
+            // read next line
+            line = reader.readLine();
+        }
+
+        reader.close();
+
+        return queries;
     }
 
     /*
      * 
      */
-    private void formatRequests() {
+    private Queries loadData(String data) {
+        TextReader textReader = new TextReader();
+        textReader.setDocument(data);
+        List<String> list = textReader.findOrderedQuestions();
 
+        Queries queries = new Queries();
+        for (String string : list) {
+            queries.addQuery(false, string);
+        }
+        return queries;
     }
 
+    
     /*
      * 
      */
-    private void loadTxtData() {
-
-    }
-
-    /*
-     * 
-     */
-    private void loadData() {
-
+    private List<String> formatResponses(List<WebElement> data) {
+        List<String> list = new ArrayList<String>();
+        for (WebElement webElement : data) {
+            list.add(webElement.getText());
+        }
+        return list;
     }
 }

@@ -1,7 +1,9 @@
-from random import randint
+from random import randrange
 from time import sleep
+
 print("start")
 try:
+    import googlesearch
     from googlesearch import search
 except ImportError:
     print("No module named 'google' found")
@@ -80,7 +82,7 @@ def load(file: str) -> list[str]:
 
 # initialization of variables
 stopWords = load('stopwords.txt')
-baseurl = 'https://www.chegg.com/homework-help/questions-and-answers/'
+baseurl = 'https://www.google.com/search?/'
 site = 'chegg'
 output = ''
 questions = load('questions.txt')
@@ -90,15 +92,18 @@ strongMatchThreshold = 0.75
 for i, question in enumerate(questions):
     output += f'{i + 1}. {question}\n\t'
     # set up the google search query
-    query = f"{site} {question}"
+    query = f"{question}"
 
     hits = []
     strongMatch = []
     count = 0
-    # perform the google search query
-    for j in search(query, tld="co.in", num=100, stop=100, pause=2):
+    # perform the google search query   , tld="co.in", num=100, stop=100, pause=2
+    sleep(randrange(1,4))
+    for j in search(query):
         # makes sure that only chegg sites get added
-        sleep(randint(1,5)) # sleep added to not overflow requests to
+        
+        sleep(randrange(1,4)) # sleep added to not overflow requests
+        
         if j[:len(baseurl)] == baseurl:
             hits.append(j)
         count += 1
