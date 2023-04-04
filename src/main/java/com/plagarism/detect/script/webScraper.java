@@ -59,14 +59,14 @@ public class webScraper {
                             responseStatus = true;
                             temp = cleanReturnedURL(temp);
                             // need similarity string check
-                            
+
                         }
-                    if(commonChar > previous){
-                        response.addQuery(responseStatus, "[" + commonChar +"] " + query.getQueryText());
+                    if (commonChar > previous) {
+                        response.addQuery(responseStatus, "[" + commonChar + "] " + query.getQueryText());
                     }
                 }
 
-                response.addQuery(responseStatus, "[" + commonChar +"] " + query.getQueryText());
+                response.addQuery(responseStatus, "[" + commonChar + "] " + query.getQueryText());
 
             }
 
@@ -79,15 +79,14 @@ public class webScraper {
 
     // Private methods
 
-    private String cleanReturnedURL(String url){
+    private String cleanReturnedURL(String url) {
         String urlString = url;
-        urlString = urlString.substring(9,  urlString.indexOf("-q", 9));
+        urlString = urlString.substring(9, urlString.indexOf("-q", 9));
         // remove
         int queryIndex = urlString.indexOf("questions-and-answers/"); // length of string = 22
         return urlString.substring(queryIndex + 22);
     }
 
-    
     /*
      * 
      */
