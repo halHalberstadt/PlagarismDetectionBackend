@@ -2,27 +2,23 @@ package com.plagarism.detect.script;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.firefox.FirefoxDriver;
+import org.jsoup.*;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import com.plagarism.detect.domain.Queries;
+import com.plagarism.detect.domain.Query;
 import com.plagarism.detect.reader.TextReader;
 
 /*
  * This class is an adaptation of a python web scraper.
  */
 public class webScraper {
- 
-    public WebDriver driver;
 
-    final String BASE_URL = "https://www.google.com/";
+    final String BASE_URL = "https://www.google.com/search?q=";
     // String driverPATH = "C:\\Program Files\\chromedriver_win32";
 
     // public methods
@@ -40,28 +36,44 @@ public class webScraper {
     /*
      * 
      */
-    public List<String> searchForRequests() {
-        WebDriver driver = new FirefoxDriver();
+    public Queries searchQueries(Queries queries) {
+        try {
+            Queries response = new Queries();
+            boolean responseStatus = false;
 
-        String baseUrl = "https://www.google.com/search?q=";
-        String expectedText = "Chegg.com";
-        String actualText = "";
+            for(Query query : queries.getQueries()){
+                Document doc = Jsoup.connect(BASE_URL + formatQuery(query)).get();
+                System.out.println("URL=" + BASE_URL + formatQuery(query));
+                responseStatus = false;
+                
+                Elements divElements = doc.getElementsByClass("qLRx3b tjvcx GvPZzd cHaqb");
+                // Elements cheggElements = doc.getElementsContainingText("Chegg");
+                for (Element element : divElements) {
+                    String temp = element.text();
+                    System.out.println(temp);
+                    // needed to add more than just a '\n' to get the information needed
+                    if(temp.length() > 1)
+                        if(temp.contains("www.chegg.com")){
+                            responseStatus = true;
+                            System.out.println("turned true");
+                        }
+                }
 
-        driver.get(baseUrl);
-
-        List<WebElement> textBox = driver.findElements(By.className("LC20lb MBeuO DKV0Md"));
-
-        // actualTitle = driver.getTitle();
-
-        // if (actualTitle.contentEquals(expectedTitle)){
-        // System.out.println("Test Passed!");
-        // } else {
-        // System.out.println("Test Failed");
-        // }
-        System.out.println(textBox.get(0).getText());
-        // close Fire fox
-        driver.close();
-        return formatResponses(textBox);
+                response.addQuery(responseStatus, query.getQueryText());
+                
+                // for (Element element : cheggElements) {
+                //     String temp = element.ownText();
+                //     if(temp.length() > 1)
+                //         response.addQuery(true, temp);
+                // }
+            }
+            /*<cite class="qLRx3b tjvcx GvPZzd cHaqb" role="text" style="max-width:315px">https://www.chegg.com<span class="dyjrff qzEoUe" role="text"> › questions-and-answers › con...</span></cite>*/
+        
+            return response;
+        } catch (Exception e) {
+            System.err.println(e.getStackTrace());
+        }
+        return null;
     }
 
     // Private methods
@@ -69,49 +81,13 @@ public class webScraper {
     /*
      * 
      */
-    private Queries loadTxtData() throws Exception{
-        Queries queries = new Queries();
-        BufferedReader reader;
-
-        reader = new BufferedReader(new FileReader("questions.txt"));
-        String line = reader.readLine();
-
-        while (line != null) {
-            queries.addQuery(false, line);
-            System.out.println(line);
-            // read next line
-            line = reader.readLine();
-        }
-
-        reader.close();
-
-        return queries;
-    }
-
-    /*
-     * 
-     */
-    private Queries loadData(String data) {
-        TextReader textReader = new TextReader();
-        textReader.setDocument(data);
-        List<String> list = textReader.findOrderedQuestions();
-
-        Queries queries = new Queries();
-        for (String string : list) {
-            queries.addQuery(false, string);
-        }
-        return queries;
-    }
-
-    
-    /*
-     * 
-     */
-    private List<String> formatResponses(List<WebElement> data) {
-        List<String> list = new ArrayList<String>();
-        for (WebElement webElement : data) {
-            list.add(webElement.getText());
-        }
-        return list;
+    private String formatQuery(Query query){
+        String formattedQuery = query.getQueryText();
+        formattedQuery = formattedQuery.replace("^[0-9]+[.)]", "");
+        formattedQuery = formattedQuery.trim();
+        formattedQuery = formattedQuery.replace("[?.\"]", "");
+        formattedQuery = formattedQuery.replaceAll(" ", "+");
+        return formattedQuery;
+        // return "chegg+" + formattedQuery;
     }
 }

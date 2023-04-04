@@ -16,6 +16,10 @@ public class Queries {
         this.listOfQueries = queries;
     }
 
+    public Queries(String queries) {
+        // grab "queries" and then find the 
+    }
+
     /*
      * addQuery returns the text of the query in case the
      * user wants to check which query was added
@@ -45,6 +49,10 @@ public class Queries {
             queryNumber++;
         }
         return returnedQueries;
+    }
+
+    public Query getQuery(int position) {
+        return listOfQueries.get(position);
     }
 
     public String[] getQueriesText() {
