@@ -41,34 +41,35 @@ public class webScraper {
             Queries response = new Queries();
             boolean responseStatus = false;
 
-            for(Query query : queries.getQueries()){
+            for (Query query : queries.getQueries()) {
+                double commonChar = 0.0, previous;
                 Document doc = Jsoup.connect(BASE_URL + formatQuery(query)).get();
                 System.out.println("URL=" + BASE_URL + formatQuery(query));
                 responseStatus = false;
-                
-                Elements divElements = doc.getElementsByClass("qLRx3b tjvcx GvPZzd cHaqb");
-                // Elements cheggElements = doc.getElementsContainingText("Chegg");
+
+                Elements divElements = doc.getElementsByTag("a");
+
                 for (Element element : divElements) {
-                    String temp = element.text();
-                    System.out.println(temp);
+                    // System.out.println(element.children());
+                    String temp = element.toString();
                     // needed to add more than just a '\n' to get the information needed
-                    if(temp.length() > 1)
-                        if(temp.contains("www.chegg.com")){
+                    previous = commonChar;
+                    if (temp.length() > 1)
+                        if (temp.contains("www.chegg.com")) {
                             responseStatus = true;
-                            System.out.println("turned true");
+                            temp = cleanReturnedURL(temp);
+                            // need similarity string check
+                            
                         }
+                    if(commonChar > previous){
+                        response.addQuery(responseStatus, "[" + commonChar +"] " + query.getQueryText());
+                    }
                 }
 
-                response.addQuery(responseStatus, query.getQueryText());
-                
-                // for (Element element : cheggElements) {
-                //     String temp = element.ownText();
-                //     if(temp.length() > 1)
-                //         response.addQuery(true, temp);
-                // }
+                response.addQuery(responseStatus, "[" + commonChar +"] " + query.getQueryText());
+
             }
-            /*<cite class="qLRx3b tjvcx GvPZzd cHaqb" role="text" style="max-width:315px">https://www.chegg.com<span class="dyjrff qzEoUe" role="text"> › questions-and-answers › con...</span></cite>*/
-        
+
             return response;
         } catch (Exception e) {
             System.err.println(e.getStackTrace());
@@ -78,10 +79,19 @@ public class webScraper {
 
     // Private methods
 
+    private String cleanReturnedURL(String url){
+        String urlString = url;
+        urlString = urlString.substring(9,  urlString.indexOf("-q", 9));
+        // remove
+        int queryIndex = urlString.indexOf("questions-and-answers/"); // length of string = 22
+        return urlString.substring(queryIndex + 22);
+    }
+
+    
     /*
      * 
      */
-    private String formatQuery(Query query){
+    private String formatQuery(Query query) {
         String formattedQuery = query.getQueryText();
         formattedQuery = formattedQuery.replace("^[0-9]+[.)]", "");
         formattedQuery = formattedQuery.trim();
