@@ -106,6 +106,14 @@ public class QueryController {
     }
 
     /*
+    * TODO
+    * This is a catch-all error page that gives a basic non-descript error report.
+    */
+    @GetMapping(value = "/error")
+    public String error() {
+       return "Sorry, an error occurred";
+    }
+    /*
      * TODO finish endpoint
      * this is the document comparison endpoint. (in progress)
      */

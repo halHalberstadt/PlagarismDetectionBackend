@@ -20,11 +20,13 @@ public class ScraperController {
    public static final String EXACT_FILE_PATH = "C:\\Users\\smhal\\Documents\\Coding\\detect\\src\\main\\java\\com\\plagarism\\detect\\script\\";
 
    /*
-    * TODO Add copy of this for request param
+    * textDocumentReader takes in a document and finds ordered or unordered questions
+    * it can also search for the questions if needed.
     */
    @GetMapping(value = "/text")
-   public ArrayList<String> textDocuemntReader(@RequestBody String document,
-         @RequestParam("ordered") boolean orderedQuestions) {
+   public ArrayList<String> textDocumentReader(@RequestBody String document,
+         @RequestParam(name = "ordered") boolean orderedQuestions) {
+      
       TextReader textReader = new TextReader();
       textReader.setDocument(document);
       ArrayList<String> questions;
@@ -33,24 +35,41 @@ public class ScraperController {
       } else {
          questions = textReader.findUnorderedQuestions();
       }
+
+      //TODO add search functionality
       return questions;
    }
 
    /*
-    * TODO
+    * TODO finish method
     */
    @GetMapping(value = "/word")
-   public Queries wordDocuemntReader(@RequestBody String document) {
+   public Queries wordDocumentReader(@RequestBody String document, @RequestParam(name="search") boolean search) {
+      // 1. check if document is a word document
+
+      // 2. if it is a word document, read questions in document and return here
+
+      // 3. if they don't need to be searched for, return found questions
+
+      // 3b. search for questions and return results
+
       return null;
    }
 
    /*
-    * TODO
-    * info send a text response of basic information of endpoints on the API
+    * /info sends a text response of basic information of endpoints on the API for new users.
     */
    @GetMapping(value = "/info")
    public String info() {
-      return "Info on API: (Under Construction)";
+      return "Basic endpoints:\n" +
+      "- /info: You're already here, so you can see what this does." +
+      "- /scraper: This takes in queries and then returns the confidence we think the text in the query were posted to Chegg.com.\n" +
+      "- /scraperText: This does the same as /scraper but with just text files (under construction).\n" +
+      "- /word: This takes in a word document and can return the questions found, and even search for them if you'd like (under construction).\n" +
+      "- /text: This does the same as /word but with text files specifically.\n" +
+      "- /exampleQueries: Example Queries object response for API testing.\n" +
+      "- /exampleQuery: Example Queries object response for API testing.\n" +
+      "(that's all of the endpoints that are currently working)";
    }
 
    /*
@@ -60,7 +79,9 @@ public class ScraperController {
     */
    @GetMapping(value = "/")
    public String home() {
-      return "Plagiarism Detection Service.";
+      return "Plagiarism Detection Service.\n" +
+      "Basic endpoints on /info page" +
+      "Credit: Michael Silva, Elijah Barsky-Ex, Hal Halberstadt, Julian Diaz, Luz Violeta Robles";
    }
 
    /*
@@ -69,7 +90,6 @@ public class ScraperController {
     */
    @GetMapping(value = "/error")
    public String error() {
-      System.err.println("Error called");
       return "Sorry, an error occurred";
    }
 
