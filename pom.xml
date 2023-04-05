@@ -58,7 +58,7 @@
 
 
         <!-- Aspose words imprort for microsoft documents-->
-        <dependency>
+        <!-- <dependency>
             <groupId>com.aspose</groupId>
             <artifactId>aspose-words</artifactId>
             <version>22.11</version>
@@ -69,7 +69,7 @@
             <artifactId>aspose-words</artifactId>
             <version>22.11</version>
             <classifier>javadoc</classifier>
-        </dependency>
+        </dependency> -->
         <!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
         <dependency>
             <groupId>org.jsoup</groupId>
@@ -79,13 +79,13 @@
     </dependencies>
 
     <!-- Java Maven Repo to make sure aspose-words works -->
-    <repositories>
+    <!-- <repositories>
         <repository>
             <id>AsposeJavaAPI</id>
             <name>Aspose Java API</name>
             <url>https://releases.aspose.com/java/repo/</url>
         </repository>
-    </repositories>
+    </repositories> -->
 
     <build>
         <plugins>
