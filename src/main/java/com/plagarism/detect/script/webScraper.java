@@ -1,9 +1,7 @@
 package com.plagarism.detect.script;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.List;
+import java.text.DecimalFormat;
+
 import org.jsoup.*;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -11,7 +9,6 @@ import org.jsoup.select.Elements;
 
 import com.plagarism.detect.domain.Queries;
 import com.plagarism.detect.domain.Query;
-import com.plagarism.detect.reader.TextReader;
 
 /*
  * This class is an adaptation of a python web scraper.
@@ -19,6 +16,7 @@ import com.plagarism.detect.reader.TextReader;
 public class webScraper {
 
     final String BASE_URL = "https://www.google.com/search?q=";
+    private static final DecimalFormat df = new DecimalFormat("0.00");
     // String driverPATH = "C:\\Program Files\\chromedriver_win32";
 
     // public methods
@@ -29,9 +27,9 @@ public class webScraper {
      * This is an application of the longest common subsequence between 2
      * strings.
      */
-    public void lcs() {
+    // public void lcs() {
 
-    }
+    // }
 
     /*
      * 
@@ -39,35 +37,38 @@ public class webScraper {
     public Queries searchQueries(Queries queries) {
         try {
             Queries response = new Queries();
-            boolean responseStatus = false;
+            String queryText;
 
             for (Query query : queries.getQueries()) {
-                double commonChar = 0.0, previous;
+                double common = 0.0, previous;
                 Document doc = Jsoup.connect(BASE_URL + formatQuery(query)).get();
-                System.out.println("URL=" + BASE_URL + formatQuery(query));
-                responseStatus = false;
+                // System.out.println("URL=" + BASE_URL + formatQuery(query));
+                queryText = query.getQueryText();
 
                 Elements divElements = doc.getElementsByTag("a");
 
                 for (Element element : divElements) {
-                    // System.out.println(element.children());
                     String temp = element.toString();
                     // needed to add more than just a '\n' to get the information needed
-                    previous = commonChar;
+                    previous = common;
                     if (temp.length() > 1)
                         if (temp.contains("www.chegg.com")) {
-                            responseStatus = true;
                             temp = cleanReturnedURL(temp);
                             // need similarity string check
-                            
+                            common = similarity(temp, queryText);
                         }
-                    if(commonChar > previous){
-                        response.addQuery(responseStatus, "[" + commonChar +"] " + query.getQueryText());
+                    if (common > previous) {
+                        // response.addQuery(responseStatus, "[" + df.format(common*100) + "%] " + query.getQueryText());
                     }
                 }
 
-                response.addQuery(responseStatus, "[" + commonChar +"] " + query.getQueryText());
+                // response.addQuery(responseStatus, "[" + df.format(common*100) + "%] " + query.getQueryText());
 
+                if(common > .7){ // with almost all the words the same in query and the link they chose
+                    response.addQuery(true, df.format(common*100) + "%->" +query.getQueryText());
+                } else {
+                    response.addQuery(false, df.format(common*100) + "%->" +query.getQueryText());
+                }
             }
 
             return response;
@@ -79,15 +80,35 @@ public class webScraper {
 
     // Private methods
 
-    private String cleanReturnedURL(String url){
+    private double similarity(String first, String second) {
+        // System.out.println("first = " + first);
+        // System.out.println("second = " + second);
+        int beginWord = 0, numberSimilar = 0, numberWords = 0;
+        String word;
+        for (int i = 0; i < second.length(); i++) {
+            if(second.charAt(i) == ' '){
+                word = second.substring(beginWord, i);
+                numberWords++;
+                if(first.contains(word)){
+                    numberSimilar++;
+                    // System.out.println("print line 91 " + numberSimilar + " " + numberWords);
+                }
+                beginWord = i+1;
+            }
+        }
+        double percent = (double) numberSimilar/ (double) numberWords;
+        // System.out.println("print line 99 " + percent);
+        return percent;
+    }
+
+    private String cleanReturnedURL(String url) {
         String urlString = url;
-        urlString = urlString.substring(9,  urlString.indexOf("-q", 9));
+        urlString = urlString.substring(9, urlString.indexOf("-q", 9));
         // remove
         int queryIndex = urlString.indexOf("questions-and-answers/"); // length of string = 22
         return urlString.substring(queryIndex + 22);
     }
 
-    
     /*
      * 
      */
