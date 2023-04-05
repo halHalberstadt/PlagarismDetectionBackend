@@ -26,7 +26,7 @@ public class QueryController {
      * TODO
      * getQueryResults
      */
-    @PostMapping(value = "/scraper")
+    @GetMapping(value = "/scraper")
     public Queries getQueryResults(@RequestBody String body) {
         // System.out.println(body);
         Queries searchQueries = fromBody(body);

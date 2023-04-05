@@ -27,9 +27,9 @@ public class webScraper {
      * This is an application of the longest common subsequence between 2
      * strings.
      */
-    public void lcs() {
+    // public void lcs() {
 
-    }
+    // }
 
     /*
      * 
@@ -37,14 +37,12 @@ public class webScraper {
     public Queries searchQueries(Queries queries) {
         try {
             Queries response = new Queries();
-            boolean responseStatus = false;
             String queryText;
 
             for (Query query : queries.getQueries()) {
                 double common = 0.0, previous;
                 Document doc = Jsoup.connect(BASE_URL + formatQuery(query)).get();
                 // System.out.println("URL=" + BASE_URL + formatQuery(query));
-                responseStatus = false;
                 queryText = query.getQueryText();
 
                 Elements divElements = doc.getElementsByTag("a");
@@ -55,7 +53,6 @@ public class webScraper {
                     previous = common;
                     if (temp.length() > 1)
                         if (temp.contains("www.chegg.com")) {
-                            responseStatus = true;
                             temp = cleanReturnedURL(temp);
                             // need similarity string check
                             common = similarity(temp, queryText);
