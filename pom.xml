@@ -69,12 +69,12 @@
             <version>22.11</version>
             <classifier>jdk17</classifier>
         </dependency>
-        <!-- <dependency>
+        <dependency>
             <groupId>com.aspose</groupId>
             <artifactId>aspose-words</artifactId>
             <version>22.11</version>
             <classifier>javadoc</classifier>
-        </dependency> -->
+        </dependency>
         <!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
         <dependency>
             <groupId>org.jsoup</groupId>
