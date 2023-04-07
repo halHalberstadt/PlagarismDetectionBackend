@@ -2,15 +2,14 @@ package com.plagarism.detect.controllers;
 
 // import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.plagarism.detect.domain.Queries;
 import com.plagarism.detect.reader.DocumentReader;
 import com.plagarism.detect.reader.TextReader;
-<<<<<<< HEAD
 import com.plagarism.detect.script.Scraper;
 
-=======
->>>>>>> master
 import java.io.File;
 import java.util.ArrayList;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,7 +44,6 @@ public class ScraperController {
     * TODO
     */
    @GetMapping(value = "/word")
-<<<<<<< HEAD
    public String wordDocumentReader(@RequestBody MultipartFile document,
          @RequestParam(name = "search") boolean search, RedirectAttributes redirectAttributes) {
       if (document.isEmpty()) {
@@ -95,10 +93,6 @@ public class ScraperController {
       // I hate that I need to specify this but I cannot re-route and return
       // the objects I want, will fix in cleanup after this all works.
       return queries.toJSON();
-=======
-   public Queries wordDocuemntReader(@RequestBody String document) {
-      return null;
->>>>>>> master
    }
 
    /*
