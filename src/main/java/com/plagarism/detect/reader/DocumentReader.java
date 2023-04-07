@@ -7,13 +7,14 @@ import com.aspose.words.Paragraph;
 import com.aspose.words.SaveFormat;
 import com.plagarism.detect.domain.Queries;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 // imports for regex
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 
 public class DocumentReader {
     License licWordToPdf;
@@ -60,24 +61,49 @@ public class DocumentReader {
         try {
             // set basic variables for document reading.
             this.path = documentPath;
-            this.document = new Document("../tmp/" + documentPath);
-            //src\main\java\com\plagarism\detect\tmp\docFile.docx
+            this.document = new Document(documentPath);
+            // src\main\java\com\plagarism\detect\tmp\docFile.docx
             this.extension = this.path.substring(path.lastIndexOf("."));
         } catch (Exception e) {
-            this.path = "[NOT SUPPORTED] " + documentPath;
+            this.path = "[NS] " + documentPath;
             // Specifies if failure is due to unsupported types or other.
-                System.err.println(path); // make sure to print the error
-                System.err.println("Error setting up document text. \n" +
-                        "Nested Error: " + e); // make sure to print the error
+            System.err.println(path); // make sure to print the error
+            System.err.println("Error setting up document text. \n" +
+                    "Nested Error: " + e); // make sure to print the error
+        }
+
+    }
+
+    public void setDocument(File document) {
+        // this.document = null; // reset document to ensure document isn't re-read.
+        this.queries.clear(); // clear queries for each document to not confuse where each came from.
+        try {
+            // set basic variables for document reading.
+            this.path = document.getName();
+
+            // since aspose words adds file locations before which I
+            // cannot change, I need to make a input stream which it does
+            // take, not something I can change but am upset about.
+            FileInputStream fileInput = new FileInputStream(document);
+            this.document = new Document(fileInput);
+            this.extension = this.path.substring(path.lastIndexOf("."));
+
+        } catch (Exception e) {
+            this.path = "[NS] " + document.getAbsolutePath();
+            // Specifies if failure is due to unsupported types or other.
+            System.err.println(path); // make sure to print the error
+            System.err.println("Error setting up document text. \n" +
+                    "Nested Error: " + e); // make sure to print the error
         }
 
     }
 
     /*
-     * readDocument is meant to just read out what the document has without formatting.
+     * readDocument is meant to just read out what the document has without
+     * formatting.
      */
     public void readDocument() {
-        nonNullCheck();
+        // nonNullCheck();
         int line = 0;
         try {
             for (Object obj : this.document.getChildNodes(NodeType.PARAGRAPH, true)) {
@@ -91,11 +117,12 @@ public class DocumentReader {
     }
 
     /*
-     * getDocumentText() this method returns a arrayList of the entire document's text
+     * getDocumentText() this method returns a arrayList of the entire document's
+     * text
      * with each line being a entry to the document text.
      */
     public ArrayList<String> getDocumentText() {
-        nonNullCheck();
+        // nonNullCheck();
         ArrayList<String> documentText = new ArrayList<>();
         int numberLinesRead = 0;
         try {
@@ -118,7 +145,7 @@ public class DocumentReader {
      * a list of strings.
      */
     public void findQuestions() {
-        nonNullCheck();
+        // nonNullCheck();
         /*
          * The way I find questions in the documents (word documents) is by
          */
@@ -150,7 +177,7 @@ public class DocumentReader {
      * NOTE: this throws an error due to the nature of the objects used
      */
     private void findFormattedQuestions() throws Exception {
-        nonNullCheck();
+        // nonNullCheck();
         for (Object obj : this.document.getChildNodes(NodeType.PARAGRAPH, true)) {
             Paragraph para = (Paragraph) obj;
             // if the paragraph is in an ordered list, save question as a query.
@@ -171,8 +198,10 @@ public class DocumentReader {
         if (paragraph.getListFormat().isListItem()) {
             // For the non-null objects we need to get how the "dots/letters" are formatted.
             byte[] bites = paragraph.getListFormat().getListLevel().getNumberFormat().getBytes(StandardCharsets.UTF_8);
-            // The ordered list that we are looking for happen to only have a byte array size of 2
-            // I am not sure why exactly, but this could break on larger lists due to data storage.
+            // The ordered list that we are looking for happen to only have a byte array
+            // size of 2
+            // I am not sure why exactly, but this could break on larger lists due to data
+            // storage.
             return bites.length == 2;
         }
         return false;
@@ -185,10 +214,11 @@ public class DocumentReader {
      * and that this is less accurate or not as assured to be accurate.
      */
     private void findUnformattedQuestions() throws Exception {
-        nonNullCheck();
+        // nonNullCheck();
         // TODO test this method findUnformattedQuestions()
         /*
-         * pattern finds any leading whitespace followed by a letter or number followed by
+         * pattern finds any leading whitespace followed by a letter or number followed
+         * by
          * any ending list character ('.', ')', or '-')
          */
         String pattern = "^\\s*[\\w|\\d]+[\\s]?[.)-]";
@@ -214,31 +244,31 @@ public class DocumentReader {
      * NOTE: not found is -1
      */
     private int getQuestionIndex(String string) {
-        nonNullCheck();
-        for ( int location = 0; location < string.length(); location++) {
+        // nonNullCheck();
+        for (int location = 0; location < string.length(); location++) {
             // if we find the last part of the "question marker" ('.', ')' or '-')
             if ((string.charAt(location) == '.' ||
                     string.charAt(location) == ')' ||
                     string.charAt(location) == '-')) {
-                return location+1;
+                return location + 1;
             }
         }
         return -1;
     }
 
-    public void printAllQueries(){
-        nonNullCheck();
+    public void printAllQueries() {
+        // nonNullCheck();
         int queryNumber = 0;
         for (String q : this.queries) {
             System.out.println("Query #" + (++queryNumber) + " found: \"" + q + "\"");
         }
-        if(queryNumber < 1){
+        if (queryNumber < 1) {
             System.out.println("No queries found.");
         }
     }
 
     private void nonNullCheck() {
-        if(this.document == null)
+        if (this.document == null)
             try {
                 throw new Exception("Docuemnt is null.");
             } catch (Exception e) {
@@ -255,15 +285,18 @@ public class DocumentReader {
     }
 
     /*
-     * This file was originally made before I wrote the Queries objects just to see if
-     * this project was feasible and got so distracted I forgot to change this to account
-     * for that change, so before I rewrite this entire file I want a working version, thus
+     * This file was originally made before I wrote the Queries objects just to see
+     * if
+     * this project was feasible and got so distracted I forgot to change this to
+     * account
+     * for that change, so before I rewrite this entire file I want a working
+     * version, thus
      * this method was made and seems off.
      */
     public Queries getQuestionsAsQueries() {
         Queries newQueries = new Queries();
         for (String text : this.queries) {
-            newQueries.addQuery(null, text);
+            newQueries.addQuery(false, text);
         }
         return newQueries;
     }

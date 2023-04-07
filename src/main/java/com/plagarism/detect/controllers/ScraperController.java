@@ -5,17 +5,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.aspose.words.Document;
 import com.plagarism.detect.domain.Queries;
 import com.plagarism.detect.reader.DocumentReader;
 import com.plagarism.detect.reader.TextReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.sql.Blob;
 import java.util.ArrayList;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class ScraperController {
 
    // NOTE this needs to be changed once deployed
-   public static final String RELATIVE_FILE_PATH = "src\\main\\java\\com\\plagarism\\detect\\";
    public static final String EXACT_FILE_PATH = "C:\\Users\\smhal\\Documents\\Coding\\detect\\src\\main\\java\\com\\plagarism\\detect\\script\\";
 
    /*
@@ -60,14 +52,15 @@ public class ScraperController {
          // throw new Exception("Document is empty");
          return null;
       }
-      File docFile = new File("../tmp/docFile.docx");
+      File docFile = new File("src/main/java/com/plagarism/detect/tmp/docFile.docx");
 
       // 0. read in document
       try {
          document.transferTo(docFile);
          // System.out.println("doc type = " + docFile.getName());
       } catch (Exception e) {
-         e.printStackTrace();
+         // e.printStackTrace();
+
       }
 
       Queries queries = null;
@@ -76,22 +69,23 @@ public class ScraperController {
       // 1. check if document is a word document
       if (documentName.contains(".docx") || documentName.contains(".doc")) {
          // 2. if it is a word document, read questions in document and return here
-         DocumentReader documentReader = new DocumentReader(documentName);
+         DocumentReader documentReader = new DocumentReader();
+         documentReader.setDocument(docFile);
          documentReader.findQuestions();
          queries = documentReader.getQuestionsAsQueries();
       } else {
-         
+
          // throw new Exception("File" + documentName + "not a supported file type.");
-         
+
       }
 
       // 3b. search for questions and return results
-      if(!queries.equals(null) && search){
+      if (!queries.equals(null) && search) {
          redirectAttributes.addAttribute(queries.toJSON());
          return "redirect:/scraper";
       }
       // 3. if they don't need to be searched for, return found questions
-      // I hate that I need to specify this but I cannot re-route and return 
+      // I hate that I need to specify this but I cannot re-route and return
       // the objects I want, will fix in cleanup after this all works.
       return queries.toJSON();
    }
