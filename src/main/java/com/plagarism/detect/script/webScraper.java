@@ -13,14 +13,14 @@ import com.plagarism.detect.domain.Query;
 /*
  * This class is an adaptation of a python web scraper.
  */
-public class WebScraper {
+public class webScraper {
 
     final String BASE_URL = "https://www.google.com/search?q=";
     private static final DecimalFormat df = new DecimalFormat("0.00");
     // String driverPATH = "C:\\Program Files\\chromedriver_win32";
 
     // public methods
-    public WebScraper() {
+    public webScraper() {
     }
 
     /*
