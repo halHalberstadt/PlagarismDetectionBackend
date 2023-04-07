@@ -8,7 +8,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.plagarism.detect.domain.Queries;
 import com.plagarism.detect.reader.DocumentReader;
 import com.plagarism.detect.reader.TextReader;
-import com.plagarism.detect.script.WebScraper;
+import com.plagarism.detect.script.Scraper;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -85,7 +85,7 @@ public class ScraperController {
       if (!queries.equals(null) && search) {
          Queries queriesFound = null;
 
-         WebScraper scraper = new WebScraper();
+         Scraper scraper = new Scraper();
         try {
          queriesFound = scraper.searchQueries(queries);
         } catch (Exception e) {
