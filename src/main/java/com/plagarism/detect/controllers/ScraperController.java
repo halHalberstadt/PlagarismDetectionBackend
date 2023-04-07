@@ -8,6 +8,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.plagarism.detect.domain.Queries;
 import com.plagarism.detect.reader.DocumentReader;
 import com.plagarism.detect.reader.TextReader;
+import com.plagarism.detect.script.WebScraper;
+
 import java.io.File;
 import java.util.ArrayList;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -81,8 +83,15 @@ public class ScraperController {
 
       // 3b. search for questions and return results
       if (!queries.equals(null) && search) {
-         redirectAttributes.addAttribute(queries.toJSON());
-         return "redirect:/scraper";
+         Queries queriesFound = null;
+
+         WebScraper scraper = new WebScraper();
+        try {
+         queriesFound = scraper.searchQueries(queries);
+        } catch (Exception e) {
+            System.err.println(e.getStackTrace());
+        }
+        return queriesFound.toJSON();
       }
       // 3. if they don't need to be searched for, return found questions
       // I hate that I need to specify this but I cannot re-route and return

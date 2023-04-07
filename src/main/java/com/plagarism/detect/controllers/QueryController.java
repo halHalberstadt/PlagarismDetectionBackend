@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.plagarism.detect.domain.Queries;
 import com.plagarism.detect.domain.Query;
-import com.plagarism.detect.script.webScraper;
+import com.plagarism.detect.script.WebScraper;
 
 @RestController
 public class QueryController {
@@ -31,7 +31,7 @@ public class QueryController {
         Queries searchQueries = fromBody(body);
         Queries queries = null;
 
-        webScraper scraper = new webScraper();
+        WebScraper scraper = new WebScraper();
         try {
             queries = scraper.searchQueries(searchQueries);
         } catch (Exception e) {
