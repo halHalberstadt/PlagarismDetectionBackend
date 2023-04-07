@@ -158,7 +158,7 @@ public class DocumentReader {
                     "Nested Error: " + e); // make sure to print the error
         }
 
-        this.printAllQueries();
+        // this.printAllQueries();
     }
 
     /*
