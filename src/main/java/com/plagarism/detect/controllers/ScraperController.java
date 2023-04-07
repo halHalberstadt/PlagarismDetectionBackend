@@ -2,10 +2,14 @@ package com.plagarism.detect.controllers;
 
 // import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.plagarism.detect.domain.Queries;
 import com.plagarism.detect.reader.DocumentReader;
 import com.plagarism.detect.reader.TextReader;
+import com.plagarism.detect.script.Scraper;
+
 import java.io.File;
 import java.util.ArrayList;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,8 +44,55 @@ public class ScraperController {
     * TODO
     */
    @GetMapping(value = "/word")
-   public Queries wordDocuemntReader(@RequestBody String document) {
-      return null;
+   public String wordDocumentReader(@RequestBody MultipartFile document,
+         @RequestParam(name = "search") boolean search, RedirectAttributes redirectAttributes) {
+      if (document.isEmpty()) {
+         // throw new Exception("Document is empty");
+         return null;
+      }
+      File docFile = new File("src/main/java/com/plagarism/detect/tmp/docFile.docx");
+
+      // 0. read in document
+      try {
+         document.transferTo(docFile);
+         // System.out.println("doc type = " + docFile.getName());
+      } catch (Exception e) {
+         // e.printStackTrace();
+
+      }
+
+      Queries queries = null;
+
+      String documentName = docFile.getName();
+      // 1. check if document is a word document
+      if (documentName.contains(".docx") || documentName.contains(".doc")) {
+         // 2. if it is a word document, read questions in document and return here
+         DocumentReader documentReader = new DocumentReader();
+         documentReader.setDocument(docFile);
+         documentReader.findQuestions();
+         queries = documentReader.getQuestionsAsQueries();
+      } else {
+
+         // throw new Exception("File" + documentName + "not a supported file type.");
+
+      }
+
+      // 3b. search for questions and return results
+      if (!queries.equals(null) && search) {
+         Queries queriesFound = null;
+
+         Scraper scraper = new Scraper();
+        try {
+         queriesFound = scraper.searchQueries(queries);
+        } catch (Exception e) {
+            System.err.println(e.getStackTrace());
+        }
+        return queriesFound.toJSON();
+      }
+      // 3. if they don't need to be searched for, return found questions
+      // I hate that I need to specify this but I cannot re-route and return
+      // the objects I want, will fix in cleanup after this all works.
+      return queries.toJSON();
    }
 
    /*

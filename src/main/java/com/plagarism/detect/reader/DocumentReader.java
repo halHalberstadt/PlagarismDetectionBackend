@@ -5,7 +5,10 @@ import com.aspose.words.License;
 import com.aspose.words.NodeType;
 import com.aspose.words.Paragraph;
 import com.aspose.words.SaveFormat;
+import com.plagarism.detect.domain.Queries;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
@@ -52,7 +55,7 @@ public class DocumentReader {
      * NOTE: This function requires the path to the document
      */
     public void setDocument(String documentPath) {
-        this.document = null; // reset document to ensure document isn't re-read.
+        // this.document = null; // reset document to ensure document isn't re-read.
         this.queries.clear(); // clear queries for each document to not confuse where each came from.
         try {
             // set basic variables for document reading.
@@ -68,6 +71,29 @@ public class DocumentReader {
 
     }
 
+    public void setDocument(File file) {
+        // this.document = null; // reset document to ensure document isn't re-read.
+        this.queries.clear(); // clear queries for each document to not confuse where each came from.
+        try {
+            // set basic variables for document reading.
+            this.path = file.getName();
+
+            // since aspose words adds file locations before which I
+            // cannot change, I need to make a input stream which it does
+            // take, not something I can change but am upset about.
+            FileInputStream fileInput = new FileInputStream(file);
+            this.document = new Document(fileInput);
+            this.extension = this.path.substring(path.lastIndexOf("."));
+
+        } catch (Exception e) {
+            this.path = "[NS] " + file.getAbsolutePath();
+            // Specifies if failure is due to unsupported types or other.
+            System.err.println(path); // make sure to print the error
+            System.err.println("Error setting up document text. \n" +
+                    "Nested Error: " + e); // make sure to print the error
+        }
+
+    }
     /*
      * NOTE: removed since PDF's are too difficult to parse at this time.
      */
@@ -93,7 +119,7 @@ public class DocumentReader {
      */
     public void readDocument() {
         int line = 0;
-        System.out.println("start reading \"" + path + "\"");
+        // System.out.println("start reading \"" + path + "\"");
         try {
             for (Object obj : this.document.getChildNodes(NodeType.PARAGRAPH, true)) {
                 Paragraph para = (Paragraph) obj;
@@ -103,7 +129,7 @@ public class DocumentReader {
             System.err.println("com.reader.ReadDocumentReaderException: Error reading document text. " +
                     "Nested Error: " + e); // make sure to print the error
         }
-        System.out.println("done reading \"" + path + "\"");
+        // System.out.println("done reading \"" + path + "\"");
     }
 
     /* TODO finish commenting
@@ -113,7 +139,7 @@ public class DocumentReader {
     public ArrayList<String> getDocumentText() {
         ArrayList<String> documentText = new ArrayList<>();
         int numberLinesRead = 0;
-        System.out.println("start reading \"" + path + "\"");
+        // System.out.println("start reading \"" + path + "\"");
         try {
             for (Object obj : this.document.getChildNodes(NodeType.BODY, true)) {
                 Paragraph para = (Paragraph) obj;
@@ -125,7 +151,7 @@ public class DocumentReader {
             System.err.println("com.reader.GetDocumentReaderTextException: Error getting document text. " +
                     "# lines read=" + numberLinesRead + "Nested Error: " + e); // make sure to print the error
         }
-        System.out.println("done reading \"" + path + "\"");
+        // System.out.println("done reading \"" + path + "\"");
 
         return documentText;
     }
@@ -138,7 +164,7 @@ public class DocumentReader {
         /*
          * The way I find questions in the documents (word documents) is by
          */
-        System.out.println("start finding questions @ \"" + path + "\"");
+        // System.out.println("start finding questions @ \"" + path + "\"");
         try {
             // find all questions we can possibly get from the document
             this.findFormattedQuestions();
@@ -147,9 +173,9 @@ public class DocumentReader {
             System.err.println("com.reader.DocumentReaderFindQuestionsException: Error finding questions from document text. " +
                     "Nested Error: " + e); // make sure to print the error
         }
-        System.out.println("done finding questions @ \"" + path + "\"");
+        // System.out.println("done finding questions @ \"" + path + "\"");
 
-        this.printAllQueries();
+        // this.printAllQueries();
     }
 
     /*
@@ -255,6 +281,23 @@ public class DocumentReader {
      * Getters and Setters
      */
 
+    /*
+     * This file was originally made before I wrote the Queries objects just to see
+     * if
+     * this project was feasible and got so distracted I forgot to change this to
+     * account
+     * for that change, so before I rewrite this entire file I want a working
+     * version, thus
+     * this method was made and seems off.
+     */
+    public Queries getQuestionsAsQueries() {
+        Queries newQueries = new Queries();
+        for (String text : this.queries) {
+            newQueries.addQuery(false, text);
+        }
+        return newQueries;
+    }
+    
     public ArrayList<String> getQuestions() {
         return this.queries;
     }
