@@ -2,11 +2,20 @@ package com.plagarism.detect.controllers;
 
 // import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.aspose.words.Document;
 import com.plagarism.detect.domain.Queries;
 import com.plagarism.detect.reader.DocumentReader;
 import com.plagarism.detect.reader.TextReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.sql.Blob;
 import java.util.ArrayList;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,17 +25,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class ScraperController {
 
    // NOTE this needs to be changed once deployed
-   public static final String RELATIVE_FILE_PATH = "src\\main\\java\\com\\plagarism\\detect\\script\\";
+   public static final String RELATIVE_FILE_PATH = "src\\main\\java\\com\\plagarism\\detect\\";
    public static final String EXACT_FILE_PATH = "C:\\Users\\smhal\\Documents\\Coding\\detect\\src\\main\\java\\com\\plagarism\\detect\\script\\";
 
    /*
-    * textDocumentReader takes in a document and finds ordered or unordered questions
+    * textDocumentReader takes in a document and finds ordered or unordered
+    * questions
     * it can also search for the questions if needed.
     */
    @GetMapping(value = "/text")
    public ArrayList<String> textDocumentReader(@RequestBody String document,
          @RequestParam(name = "ordered") boolean orderedQuestions) {
-      
+
       TextReader textReader = new TextReader();
       textReader.setDocument(document);
       ArrayList<String> questions;
@@ -36,40 +46,73 @@ public class ScraperController {
          questions = textReader.findUnorderedQuestions();
       }
 
-      //TODO add search functionality
+      // TODO add search functionality
       return questions;
    }
 
    /*
-    * TODO finish method
+    * TODO send a Word doc to this and see what happens
     */
    @GetMapping(value = "/word")
-   public Queries wordDocumentReader(@RequestBody String document, @RequestParam(name="search") boolean search) {
+   public String wordDocumentReader(@RequestBody MultipartFile document,
+         @RequestParam(name = "search") boolean search, RedirectAttributes redirectAttributes) {
+      if (document.isEmpty()) {
+         // throw new Exception("Document is empty");
+         return null;
+      }
+      File docFile = new File("../tmp/docFile.docx");
+
+      // 0. read in document
+      try {
+         document.transferTo(docFile);
+         // System.out.println("doc type = " + docFile.getName());
+      } catch (Exception e) {
+         e.printStackTrace();
+      }
+
+      Queries queries = null;
+
+      String documentName = docFile.getName();
       // 1. check if document is a word document
-
-      // 2. if it is a word document, read questions in document and return here
-
-      // 3. if they don't need to be searched for, return found questions
+      if (documentName.contains(".docx") || documentName.contains(".doc")) {
+         // 2. if it is a word document, read questions in document and return here
+         DocumentReader documentReader = new DocumentReader(documentName);
+         documentReader.findQuestions();
+         queries = documentReader.getQuestionsAsQueries();
+      } else {
+         
+         // throw new Exception("File" + documentName + "not a supported file type.");
+         
+      }
 
       // 3b. search for questions and return results
-
-      return null;
+      if(!queries.equals(null) && search){
+         redirectAttributes.addAttribute(queries.toJSON());
+         return "redirect:/scraper";
+      }
+      // 3. if they don't need to be searched for, return found questions
+      // I hate that I need to specify this but I cannot re-route and return 
+      // the objects I want, will fix in cleanup after this all works.
+      return queries.toJSON();
    }
 
    /*
-    * /info sends a text response of basic information of endpoints on the API for new users.
+    * /info sends a text response of basic information of endpoints on the API for
+    * new users.
     */
    @GetMapping(value = "/info")
    public String info() {
       return "Basic endpoints:\n" +
-      "- /info: You're already here, so you can see what this does." +
-      "- /scraper: This takes in queries and then returns the confidence we think the text in the query were posted to Chegg.com.\n" +
-      "- /scraperText: This does the same as /scraper but with just text files (under construction).\n" +
-      "- /word: This takes in a word document and can return the questions found, and even search for them if you'd like (under construction).\n" +
-      "- /text: This does the same as /word but with text files specifically.\n" +
-      "- /exampleQueries: Example Queries object response for API testing.\n" +
-      "- /exampleQuery: Example Queries object response for API testing.\n" +
-      "(that's all of the endpoints that are currently working)";
+            "- /info: You're already here, so you can see what this does." +
+            "- /scraper: This takes in queries and then returns the confidence we think the text in the query were posted to Chegg.com.\n"
+            +
+            "- /scraperText: This does the same as /scraper but with just text files (under construction).\n" +
+            "- /word: This takes in a word document and can return the questions found, and even search for them if you'd like (under construction).\n"
+            +
+            "- /text: This does the same as /word but with text files specifically.\n" +
+            "- /exampleQueries: Example Queries object response for API testing.\n" +
+            "- /exampleQuery: Example Queries object response for API testing.\n" +
+            "(that's all of the endpoints that are currently working)";
    }
 
    /*
@@ -80,8 +123,8 @@ public class ScraperController {
    @GetMapping(value = "/")
    public String home() {
       return "Plagiarism Detection Service.\n" +
-      "Basic endpoints on /info page" +
-      "Credit: Michael Silva, Elijah Barsky-Ex, Hal Halberstadt, Julian Diaz, Luz Violeta Robles";
+            "Basic endpoints on /info" +
+            "Credit: Michael Silva, Elijah Barsky-Ex, Hal Halberstadt, Julian Diaz, Luz Violeta Robles";
    }
 
    /*
@@ -149,4 +192,11 @@ public class ScraperController {
       return listOfFileLocations;
    }
 
+   /*
+    * 
+    */
+   private boolean isWordDocument(File file) {
+
+      return false;
+   }
 }

@@ -5,6 +5,7 @@ import com.aspose.words.License;
 import com.aspose.words.NodeType;
 import com.aspose.words.Paragraph;
 import com.aspose.words.SaveFormat;
+import com.plagarism.detect.domain.Queries;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public class DocumentReader {
             this.licWordToPdf = new License();
             this.licWordToPdf.setLicense("Aspose.Words.lic");
         } catch (Exception e) {
-            System.err.println("com.reader.DocumentReaderInitializationException: Error initializing DocumentReader. " +
+            System.err.println("Error initializing DocumentReader. \n" +
                     "Nested Error: " + e); // make sure to print the error
         }
     }
@@ -36,12 +37,14 @@ public class DocumentReader {
     public DocumentReader(String documentPath) {
         // Create a license object to avoid limitations of the trial version
         // while reading the Word file
+        this.setDocument(documentPath);
+
+        System.out.println(documentPath);
         try {
             this.licWordToPdf = new License();
             this.licWordToPdf.setLicense("Aspose.Words.lic");
-            this.setDocument(documentPath);
         } catch (Exception e) {
-            System.err.println("com.reader.DocumentReaderInitializationException: Error initializing DocumentReader. " +
+            System.err.println("Error initializing DocumentReader. \n" +
                     "Nested Error: " + e); // make sure to print the error
         }
     }
@@ -57,63 +60,44 @@ public class DocumentReader {
         try {
             // set basic variables for document reading.
             this.path = documentPath;
-            this.document = new Document(documentPath);
+            this.document = new Document("../tmp/" + documentPath);
+            //src\main\java\com\plagarism\detect\tmp\docFile.docx
             this.extension = this.path.substring(path.lastIndexOf("."));
         } catch (Exception e) {
             this.path = "[NOT SUPPORTED] " + documentPath;
             // Specifies if failure is due to unsupported types or other.
-                System.err.println("com.reader.SetDocumentReaderException: Error setting up document text. " +
+                System.err.println(path); // make sure to print the error
+                System.err.println("Error setting up document text. \n" +
                         "Nested Error: " + e); // make sure to print the error
         }
 
     }
 
     /*
-     * NOTE: removed since PDF's are too difficult to parse at this time.
-     */
-    // public void setPDFDocument(String path) throws IOException {
-    //     File file = new File(path);
-    //     PDDocument doc = new PDDocument();
-    //     try
-    //     {
-    //         doc = PDDocument.load(file);
-    //         System.out.println("PDF initialized " );
-
-    //     } finally
-    //     {
-    //         if( doc != null )
-    //         {
-    //             doc.close();
-    //         }
-    //     }
-    // }
-
-    /*
      * readDocument is meant to just read out what the document has without formatting.
      */
     public void readDocument() {
+        nonNullCheck();
         int line = 0;
-        System.out.println("start reading \"" + path + "\"");
         try {
             for (Object obj : this.document.getChildNodes(NodeType.PARAGRAPH, true)) {
                 Paragraph para = (Paragraph) obj;
                 System.out.println("" + (++line) + " - " + para.toString(SaveFormat.TEXT));
             }
         } catch (Exception e) {
-            System.err.println("com.reader.ReadDocumentReaderException: Error reading document text. " +
+            System.err.println("Error reading document text. \n" +
                     "Nested Error: " + e); // make sure to print the error
         }
-        System.out.println("done reading \"" + path + "\"");
     }
 
-    /* TODO finish commenting
+    /*
      * getDocumentText() this method returns a arrayList of the entire document's text
      * with each line being a entry to the document text.
      */
     public ArrayList<String> getDocumentText() {
+        nonNullCheck();
         ArrayList<String> documentText = new ArrayList<>();
         int numberLinesRead = 0;
-        System.out.println("start reading \"" + path + "\"");
         try {
             for (Object obj : this.document.getChildNodes(NodeType.BODY, true)) {
                 Paragraph para = (Paragraph) obj;
@@ -122,10 +106,9 @@ public class DocumentReader {
             }
 
         } catch (Exception e) {
-            System.err.println("com.reader.GetDocumentReaderTextException: Error getting document text. " +
+            System.err.println("Error getting document text. \n" +
                     "# lines read=" + numberLinesRead + "Nested Error: " + e); // make sure to print the error
         }
-        System.out.println("done reading \"" + path + "\"");
 
         return documentText;
     }
@@ -135,19 +118,18 @@ public class DocumentReader {
      * a list of strings.
      */
     public void findQuestions() {
+        nonNullCheck();
         /*
          * The way I find questions in the documents (word documents) is by
          */
-        System.out.println("start finding questions @ \"" + path + "\"");
         try {
             // find all questions we can possibly get from the document
             this.findFormattedQuestions();
             this.findUnformattedQuestions();
         } catch (Exception e) {
-            System.err.println("com.reader.DocumentReaderFindQuestionsException: Error finding questions from document text. " +
+            System.err.println("Error finding questions from document text. \n" +
                     "Nested Error: " + e); // make sure to print the error
         }
-        System.out.println("done finding questions @ \"" + path + "\"");
 
         this.printAllQueries();
     }
@@ -168,6 +150,7 @@ public class DocumentReader {
      * NOTE: this throws an error due to the nature of the objects used
      */
     private void findFormattedQuestions() throws Exception {
+        nonNullCheck();
         for (Object obj : this.document.getChildNodes(NodeType.PARAGRAPH, true)) {
             Paragraph para = (Paragraph) obj;
             // if the paragraph is in an ordered list, save question as a query.
@@ -202,6 +185,7 @@ public class DocumentReader {
      * and that this is less accurate or not as assured to be accurate.
      */
     private void findUnformattedQuestions() throws Exception {
+        nonNullCheck();
         // TODO test this method findUnformattedQuestions()
         /*
          * pattern finds any leading whitespace followed by a letter or number followed by
@@ -230,6 +214,7 @@ public class DocumentReader {
      * NOTE: not found is -1
      */
     private int getQuestionIndex(String string) {
+        nonNullCheck();
         for ( int location = 0; location < string.length(); location++) {
             // if we find the last part of the "question marker" ('.', ')' or '-')
             if ((string.charAt(location) == '.' ||
@@ -242,6 +227,7 @@ public class DocumentReader {
     }
 
     public void printAllQueries(){
+        nonNullCheck();
         int queryNumber = 0;
         for (String q : this.queries) {
             System.out.println("Query #" + (++queryNumber) + " found: \"" + q + "\"");
@@ -251,12 +237,35 @@ public class DocumentReader {
         }
     }
 
+    private void nonNullCheck() {
+        if(this.document == null)
+            try {
+                throw new Exception("Docuemnt is null.");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+    }
+
     /*
      * Getters and Setters
      */
 
     public ArrayList<String> getQuestions() {
         return this.queries;
+    }
+
+    /*
+     * This file was originally made before I wrote the Queries objects just to see if
+     * this project was feasible and got so distracted I forgot to change this to account
+     * for that change, so before I rewrite this entire file I want a working version, thus
+     * this method was made and seems off.
+     */
+    public Queries getQuestionsAsQueries() {
+        Queries newQueries = new Queries();
+        for (String text : this.queries) {
+            newQueries.addQuery(null, text);
+        }
+        return newQueries;
     }
 
     public String getExtension() {
