@@ -22,7 +22,8 @@ public class ScraperController {
    public static final String EXACT_FILE_PATH = "C:\\Users\\smhal\\Documents\\Coding\\detect\\src\\main\\java\\com\\plagarism\\detect\\script\\";
 
    /*
-    * 
+    * textDocumentReader() reads a document read in
+    * as a string rather than an actual file.
     */
    @GetMapping(value = "/text")
    public ArrayList<String> textDocumentReader(@RequestBody String document,
@@ -39,7 +40,9 @@ public class ScraperController {
    }
 
    /*
-    *
+    * wordDocumentReader() reads in a imported file that overwrites
+    * docFile and then reads in the information and returns the search
+    * results of questions found therein or just the questions found.
     */
    @GetMapping(value = "/word")
    public String wordDocumentReader(@RequestBody MultipartFile document,
@@ -51,14 +54,11 @@ public class ScraperController {
       try {
          document.transferTo(docFile);
       } catch (Exception e) {
-         // e.printStackTrace(); // Print Error if need be
          return "ERR: transferTo()";
       }
       Queries queries = null; // set as null as a fail test case for later.
       String documentName = docFile.getName();
-      // 1. check if document is a word document
       if (documentName.contains(".docx") || documentName.contains(".doc")) {
-         // 2. if it is a word document, read questions in document and return here
          DocumentReader documentReader = new DocumentReader();
          documentReader.setDocument(docFile);
          documentReader.findQuestions();
@@ -77,14 +77,12 @@ public class ScraperController {
          }
          return queriesFound.toJSON();
       }
-      // If they don't need to be searched for, return found questions
-      // I hate that I need to specify this but I cannot re-route and return
-      // the objects I want, will fix in cleanup after this all works.
+      // If none are found, return the empty queries as a not-found signal
       return queries.toJSON();
    }
 
    /*
-    * info send a text response of basic information of endpoints on the API
+    * info() send a text response of basic information of endpoints on the API
     */
    @GetMapping(value = "/info")
    public String info() {
@@ -101,51 +99,12 @@ public class ScraperController {
    }
 
    /*
-    * This is a catch-all error page that gives a basic non-descript error report.
+    * This is a catch-all error page that gives a basic non-specific error report.
     */
    @GetMapping(value = "/error")
    public String error() {
       System.err.println("Error called");
       return "Sorry, an error occurred";
-   }
-
-   /*
-    * Helper functions
-    */
-
-   /*
-    * 
-    */
-   @SuppressWarnings(value = "unused")
-   private void testDocumentReader() {
-      DocumentReader reader = new DocumentReader();
-      ArrayList<String> fileLocations = findDocuments();
-
-      for (String fileLocation : fileLocations) {
-         System.out.println("Reading document @ " + fileLocation);
-         reader.setDocument(fileLocation);
-         try {
-            reader.findQuestions();
-         } catch (Exception e) {
-            System.out.println("error finding questions error = " + e);
-         }
-      }
-   }
-
-   /*
-    * 
-    */
-   private static ArrayList<String> findDocuments() {
-      File folder = new File(EXACT_FILE_PATH);
-      ArrayList<String> listOfFileLocations = new ArrayList<String>();
-      File[] listOfFiles = folder.listFiles();
-      for (int i = 0; i < listOfFiles.length; i++) {
-         if (listOfFiles[i].isFile()) {
-            // Need to format the file location to get all exact paths
-            listOfFileLocations.add(EXACT_FILE_PATH + listOfFiles[i].getName());
-         }
-      }
-      return listOfFileLocations;
    }
 
 }
