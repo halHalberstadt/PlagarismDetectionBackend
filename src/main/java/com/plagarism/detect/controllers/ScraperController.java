@@ -24,7 +24,8 @@ public class ScraperController {
    public static final String EXACT_FILE_PATH = "C:\\Users\\smhal\\Documents\\Coding\\detect\\src\\main\\java\\com\\plagarism\\detect\\script\\";
 
    /*
-    * TODO Add copy of this for request param
+    * textDocumentReader() reads a document read in
+    * as a string rather than an actual file.
     */
    @GetMapping(value = "/text")
    public ArrayList<String> textDocuemntReader(@RequestBody String document,
@@ -41,62 +42,48 @@ public class ScraperController {
    }
 
    /*
-    * TODO
+    * wordDocumentReader() reads in a imported file that overwrites
+    * docFile and then reads in the information and returns the search
+    * results of questions found therein or just the questions found.
     */
    @GetMapping(value = "/word")
-   public String wordDocumentReader(@RequestBody MultipartFile document,
+   public Queries wordDocumentReader(@RequestBody MultipartFile document,
          @RequestParam(name = "search") boolean search, RedirectAttributes redirectAttributes) {
-      if (document.isEmpty()) {
-         // throw new Exception("Document is empty");
+      if (document.isEmpty())
          return null;
-      }
       File docFile = new File("src/main/java/com/plagarism/detect/tmp/docFile.docx");
-
-      // 0. read in document
       try {
          document.transferTo(docFile);
-         // System.out.println("doc type = " + docFile.getName());
       } catch (Exception e) {
          // e.printStackTrace();
-
       }
-
       Queries queries = null;
-
       String documentName = docFile.getName();
-      // 1. check if document is a word document
       if (documentName.contains(".docx") || documentName.contains(".doc")) {
-         // 2. if it is a word document, read questions in document and return here
          DocumentReader documentReader = new DocumentReader();
          documentReader.setDocument(docFile);
          documentReader.findQuestions();
          queries = documentReader.getQuestionsAsQueries();
       } else {
-
          // throw new Exception("File" + documentName + "not a supported file type.");
-
       }
-
-      // 3b. search for questions and return results
       if (!queries.equals(null) && search) {
          Queries queriesFound = null;
-
          Scraper scraper = new Scraper();
-        try {
-         queriesFound = scraper.searchQueries(queries);
-        } catch (Exception e) {
+         try {
+            queriesFound = scraper.searchQueries(queries);
+         } catch (Exception e) {
             System.err.println(e.getStackTrace());
-        }
-        return queriesFound.toJSON();
+         }
+         return queriesFound;
       }
       // 3. if they don't need to be searched for, return found questions
       // I hate that I need to specify this but I cannot re-route and return
       // the objects I want, will fix in cleanup after this all works.
-      return queries.toJSON();
+      return queries;
    }
 
    /*
-    * TODO
     * info send a text response of basic information of endpoints on the API
     */
    @GetMapping(value = "/info")
@@ -105,7 +92,6 @@ public class ScraperController {
    }
 
    /*
-    * TODO
     * this is he home or landing page mostly as a test to make sure the API is
     * running.
     */
@@ -115,7 +101,6 @@ public class ScraperController {
    }
 
    /*
-    * TODO
     * This is a catch-all error page that gives a basic non-descript error report.
     */
    @GetMapping(value = "/error")

@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 public class DocumentReader {
     License licWordToPdf;
     Document document;
@@ -65,8 +64,8 @@ public class DocumentReader {
         } catch (Exception e) {
             this.path = "[NOT SUPPORTED] " + documentPath;
             // Specifies if failure is due to unsupported types or other.
-                System.err.println("com.reader.SetDocumentReaderException: Error setting up document text. " +
-                        "Nested Error: " + e); // make sure to print the error
+            System.err.println("com.reader.SetDocumentReaderException: Error setting up document text. " +
+                    "Nested Error: " + e); // make sure to print the error
         }
 
     }
@@ -98,24 +97,25 @@ public class DocumentReader {
      * NOTE: removed since PDF's are too difficult to parse at this time.
      */
     // public void setPDFDocument(String path) throws IOException {
-    //     File file = new File(path);
-    //     PDDocument doc = new PDDocument();
-    //     try
-    //     {
-    //         doc = PDDocument.load(file);
-    //         System.out.println("PDF initialized " );
+    // File file = new File(path);
+    // PDDocument doc = new PDDocument();
+    // try
+    // {
+    // doc = PDDocument.load(file);
+    // System.out.println("PDF initialized " );
 
-    //     } finally
-    //     {
-    //         if( doc != null )
-    //         {
-    //             doc.close();
-    //         }
-    //     }
+    // } finally
+    // {
+    // if( doc != null )
+    // {
+    // doc.close();
+    // }
+    // }
     // }
 
     /*
-     * readDocument is meant to just read out what the document has without formatting.
+     * readDocument is meant to just read out what the document has without
+     * formatting.
      */
     public void readDocument() {
         int line = 0;
@@ -132,8 +132,10 @@ public class DocumentReader {
         // System.out.println("done reading \"" + path + "\"");
     }
 
-    /* TODO finish commenting
-     * getDocumentText() this method returns a arrayList of the entire document's text
+    /*
+     * TODO finish commenting
+     * getDocumentText() this method returns a arrayList of the entire document's
+     * text
      * with each line being a entry to the document text.
      */
     public ArrayList<String> getDocumentText() {
@@ -170,8 +172,9 @@ public class DocumentReader {
             this.findFormattedQuestions();
             this.findUnformattedQuestions();
         } catch (Exception e) {
-            System.err.println("com.reader.DocumentReaderFindQuestionsException: Error finding questions from document text. " +
-                    "Nested Error: " + e); // make sure to print the error
+            System.err.println(
+                    "com.reader.DocumentReaderFindQuestionsException: Error finding questions from document text. " +
+                            "Nested Error: " + e); // make sure to print the error
         }
         // System.out.println("done finding questions @ \"" + path + "\"");
 
@@ -214,8 +217,10 @@ public class DocumentReader {
         if (paragraph.getListFormat().isListItem()) {
             // For the non-null objects we need to get how the "dots/letters" are formatted.
             byte[] bites = paragraph.getListFormat().getListLevel().getNumberFormat().getBytes(StandardCharsets.UTF_8);
-            // The ordered list that we are looking for happen to only have a byte array size of 2
-            // I am not sure why exactly, but this could break on larger lists due to data storage.
+            // The ordered list that we are looking for happen to only have a byte array
+            // size of 2
+            // I am not sure why exactly, but this could break on larger lists due to data
+            // storage.
             return bites.length == 2;
         }
         return false;
@@ -230,7 +235,8 @@ public class DocumentReader {
     private void findUnformattedQuestions() throws Exception {
         // TODO test this method findUnformattedQuestions()
         /*
-         * pattern finds any leading whitespace followed by a letter or number followed by
+         * pattern finds any leading whitespace followed by a letter or number followed
+         * by
          * any ending list character ('.', ')', or '-')
          */
         String pattern = "^\\s*[\\w|\\d]+[\\s]?[.)-]";
@@ -256,23 +262,23 @@ public class DocumentReader {
      * NOTE: not found is -1
      */
     private int getQuestionIndex(String string) {
-        for ( int location = 0; location < string.length(); location++) {
+        for (int location = 0; location < string.length(); location++) {
             // if we find the last part of the "question marker" ('.', ')' or '-')
             if ((string.charAt(location) == '.' ||
                     string.charAt(location) == ')' ||
                     string.charAt(location) == '-')) {
-                return location+1;
+                return location + 1;
             }
         }
         return -1;
     }
 
-    public void printAllQueries(){
+    public void printAllQueries() {
         int queryNumber = 0;
         for (String q : this.queries) {
             System.out.println("Query #" + (++queryNumber) + " found: \"" + q + "\"");
         }
-        if(queryNumber < 1){
+        if (queryNumber < 1) {
             System.out.println("No queries found.");
         }
     }
@@ -297,7 +303,7 @@ public class DocumentReader {
         }
         return newQueries;
     }
-    
+
     public ArrayList<String> getQuestions() {
         return this.queries;
     }
