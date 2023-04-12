@@ -6,6 +6,7 @@ public class Queries {
     int numberQueries;
     ArrayList<Query> listOfQueries = new ArrayList<Query>();
 
+    // Constructors
     public Queries() {
         numberQueries = 0;
         this.listOfQueries = new ArrayList<Query>();
@@ -16,9 +17,7 @@ public class Queries {
         this.listOfQueries = queries;
     }
 
-    public Queries(String queries) {
-        // grab "queries" and then find the 
-    }
+    // Functions
 
     /*
      * addQuery returns the text of the query in case the
@@ -75,10 +74,13 @@ public class Queries {
         return returnedQueries;
     }
 
+    // This is just a manual formatted JSON primarily for readable responses during testing.
     public String toJSON() {
         String returnString = "{\n" + "\t\"numberQueries\": " + this.numberQueries + ",\n\t\"queries\": [\n";
 
         for (Query iterableQuery : this.listOfQueries) {
+            // query.toJSON() is not used here since we need to indent and I do not yet know a way to
+            // easily tab pre-formatted strings and haven't had time to do so.
             returnString += "\t\t{\n";
             returnString += "\t\t\t\"foundOnline\": "+ iterableQuery.getFoundOnline() + "\n";
             returnString += "\t\t\t\"queryText\": \""+ iterableQuery.getQueryText() + "\"\n";

@@ -36,6 +36,7 @@ public class Query {
         return foundOnline;
     }
 
+    // This is just a manual formatted JSON primarily for readable responses during testing.
     public String toJSON() {
         String returnString = "{\n" + "\t\"foundOnline\": " + foundOnline + 
         ",\n\t\"queryText\": \"" + queryText + "\"\n";
