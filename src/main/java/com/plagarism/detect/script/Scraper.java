@@ -36,14 +36,13 @@ public class Scraper {
             String queryText;
 
             for (Query query : queries.getQueries()) {
-                double common = 0.0, previous;
+                double common = 0.0;
                 Document doc = Jsoup.connect(BASE_URL + formatQuery(query)).get();
                 queryText = query.getQueryText();
                 Elements divElements = doc.getElementsByTag("a");
                 for (Element element : divElements) {
                     String temp = element.toString();
                     // needed to add more than just a '\n' to get the information needed
-                    previous = common;
                     if (temp.length() > 1)
                         if (temp.contains("www.chegg.com")) {
                             temp = cleanReturnedURL(temp);
