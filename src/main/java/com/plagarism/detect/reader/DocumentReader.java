@@ -23,9 +23,7 @@ public class DocumentReader {
     String extension;
     ArrayList<String> queries = new ArrayList<>();
 
-    /*
-     * Basic Constructor
-     */
+    // Basic Constructor
     public DocumentReader() {
         // Create a license object to avoid limitations of the trial version
         // while reading the Word file
@@ -33,14 +31,13 @@ public class DocumentReader {
             this.licWordToPdf = new License();
             this.licWordToPdf.setLicense("Aspose.Words.lic");
         } catch (Exception e) {
-            System.err.println("com.reader.DocumentReaderInitializationException: Error initializing DocumentReader. " +
-                    "Nested Error: " + e); // make sure to print the error
+            System.err
+                    .println("com.reader.DocumentReaderInitializationException: Error initializing DocumentReader. \n" +
+                            "Nested Error: " + e); // make sure to print the error
         }
     }
 
-    /*
-     * 
-     */
+    // Constructor that takes in String for the document
     public DocumentReader(String documentPath) {
         // Create a license object to avoid limitations of the trial version
         // while reading the Word file
@@ -49,8 +46,24 @@ public class DocumentReader {
             this.licWordToPdf.setLicense("Aspose.Words.lic");
             this.setDocument(documentPath);
         } catch (Exception e) {
-            System.err.println("com.reader.DocumentReaderInitializationException: Error initializing DocumentReader. " +
-                    "Nested Error: " + e); // make sure to print the error
+            System.err
+                    .println("com.reader.DocumentReaderInitializationException: Error initializing DocumentReader. \n" +
+                            "Nested Error: " + e); // make sure to print the error
+        }
+    }
+
+    // Constructor that takes in a File object for the document
+    public DocumentReader(File file) {
+        // Create a license object to avoid limitations of the trial version
+        // while reading the Word file
+        try {
+            this.licWordToPdf = new License();
+            this.licWordToPdf.setLicense("Aspose.Words.lic");
+            this.setDocument(file);
+        } catch (Exception e) {
+            System.err
+                    .println("com.reader.DocumentReaderInitializationException: Error initializing DocumentReader. \n" +
+                            "Nested Error: " + e); // make sure to print the error
         }
     }
 
@@ -60,7 +73,7 @@ public class DocumentReader {
      * NOTE: This function requires the path to the document
      */
     public void setDocument(String documentPath) {
-        // this.document = null; // reset document to ensure document isn't re-read.
+        this.document = null; // reset document to ensure document isn't re-read.
         this.queries.clear(); // clear queries for each document to not confuse where each came from.
         try {
             // set basic variables for document reading.
@@ -70,7 +83,7 @@ public class DocumentReader {
         } catch (Exception e) {
             this.path = "[NOT SUPPORTED] " + documentPath;
             // Specifies if failure is due to unsupported types or other.
-            System.err.println("com.reader.SetDocumentReaderException: Error setting up document text. " +
+            System.err.println("com.reader.SetDocumentReaderException: Error setting up document text. \n" +
                     "Nested Error: " + e); // make sure to print the error
         }
 
@@ -81,15 +94,16 @@ public class DocumentReader {
      * necessary information directly from that object.
      */
     public void setDocument(File file) {
-        // this.document = null; // reset document to ensure document isn't re-read.
+        this.document = null; // reset document to ensure document isn't re-read.
         this.queries.clear(); // clear queries for each document to not confuse where each came from.
         try {
             // set basic variables for document reading.
             this.path = file.getName();
 
-            // since aspose words adds file locations before which I
-            // cannot change, I need to make a input stream which it does
-            // take, not something I can change but am upset about.
+            /* since aspose words adds file locations before which I
+             * cannot change, I need to make a input stream which it does
+             * take, not something I can change but that I am upset about.
+            */
             FileInputStream fileInput = new FileInputStream(file);
             this.document = new Document(fileInput);
             this.extension = this.path.substring(path.lastIndexOf("."));
@@ -116,7 +130,7 @@ public class DocumentReader {
                 System.out.println("" + (++line) + " - " + para.toString(SaveFormat.TEXT));
             }
         } catch (Exception e) {
-            System.err.println("com.reader.ReadDocumentReaderException: Error reading document text. " +
+            System.err.println("com.reader.ReadDocumentReaderException: Error reading document text. \n" +
                     "Nested Error: " + e); // make sure to print the error
         }
         // System.out.println("done reading \"" + path + "\"");
@@ -130,7 +144,6 @@ public class DocumentReader {
     public ArrayList<String> getDocumentText() {
         ArrayList<String> documentText = new ArrayList<>();
         int numberLinesRead = 0;
-        // System.out.println("start reading \"" + path + "\"");
         try {
             for (Object obj : this.document.getChildNodes(NodeType.BODY, true)) {
                 Paragraph para = (Paragraph) obj;
@@ -139,10 +152,9 @@ public class DocumentReader {
             }
 
         } catch (Exception e) {
-            System.err.println("com.reader.GetDocumentReaderTextException: Error getting document text. " +
+            System.err.println("com.reader.GetDocumentReaderTextException: Error getting document text. \n" +
                     "# lines read=" + numberLinesRead + "Nested Error: " + e); // make sure to print the error
         }
-        // System.out.println("done reading \"" + path + "\"");
 
         return documentText;
     }
@@ -154,12 +166,11 @@ public class DocumentReader {
      */
     public void findQuestions() {
         try {
-            // find all questions we can possibly get from the document
             this.findFormattedQuestions();
             this.findUnformattedQuestions();
         } catch (Exception e) {
             System.err.println(
-                    "com.reader.DocumentReaderFindQuestionsException: Error finding questions from document text. " +
+                    "com.reader.DocumentReaderFindQuestionsException: Error finding questions from document text. \n" +
                             "Nested Error: " + e); // make sure to print the error
         }
     }
@@ -195,10 +206,11 @@ public class DocumentReader {
         if (paragraph.getListFormat().isListItem()) {
             // For the non-null objects we need to get how the "dots/letters" are formatted.
             byte[] bites = paragraph.getListFormat().getListLevel().getNumberFormat().getBytes(StandardCharsets.UTF_8);
-            // The ordered list that we are looking for happen to only have a byte array
-            // size of 2
-            // I am not sure why exactly, but this could break on larger lists due to data
-            // storage.
+            /*
+             * The ordered list that we are looking for happen to only have a byte array
+             * size of 2. I am not sure why exactly, but this could break on larger
+             * lists due to data storage.
+             */
             return bites.length == 2;
         }
         return false;
@@ -250,9 +262,6 @@ public class DocumentReader {
         return -1;
     }
 
-    /*
-     * 
-     */
     public void printAllQueries() {
         int queryNumber = 0;
         for (String q : this.queries) {
@@ -269,12 +278,10 @@ public class DocumentReader {
 
     /*
      * This file was originally made before I wrote the Queries objects just to see
-     * if
-     * this project was feasible and got so distracted I forgot to change this to
-     * account
-     * for that change, so before I rewrite this entire file I want a working
-     * version, thus
-     * this method was made and seems off.
+     * if this project was feasible and got so distracted I forgot to change this to
+     * account for that change, so before I rewrite this entire file I want a
+     * working
+     * version, thus this method was made and seems off.
      */
     public Queries getQuestionsAsQueries() {
         Queries newQueries = new Queries();
