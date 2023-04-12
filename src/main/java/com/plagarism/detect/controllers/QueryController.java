@@ -1,9 +1,5 @@
 package com.plagarism.detect.controllers;
 
-import java.io.BufferedReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,8 +18,8 @@ public class QueryController {
     public static final String EXACT_FILE_PATH = "C:\\Users\\smhal\\Documents\\Coding\\detect\\src\\main\\java\\com\\plagarism\\detect\\script\\";
 
     /*
-     * TODO
-     * getQueryResults
+     * getQueryResults returns the results for a string input like
+     * those from textboxes
      */
     @GetMapping(value = "/scraper")
     public Queries getQueryResults(@RequestBody String body) {
@@ -40,36 +36,6 @@ public class QueryController {
     }
 
     /*
-     * getQueryResultsPython
-     */
-    @GetMapping(value = "/scraperText")
-    public String getQueryResultsPython(@RequestBody Queries text) {
-        writeQuestionsToFile(text);
-        // run the Python script
-        return runPythonScript();
-    }
-
-    private boolean writeQuestionsToFile(Queries questions) {
-        try {
-            FileWriter myWriter = new FileWriter("../script/questions.txt");
-            myWriter.write(""); // clear the file so no previous questions are there
-
-            for (Query question : questions.getQueries()) {
-                // '\n' needed to separate questions
-                myWriter.append(question.getQueryText() + "\n");
-            }
-
-            myWriter.close();
-            return true;
-        } catch (IOException e) {
-            System.out.println("An error occurred.");
-            e.printStackTrace();
-        }
-
-        return false;
-    }
-
-    /*
      * TODO
      * this is an example Queries return endpoint
      */
@@ -81,19 +47,14 @@ public class QueryController {
             example = new Query();
             example.setFoundOnline(false);
             example.setQueryText("Example Question #" + i + "?");
-
-            // System.out.println("out =>" + example);
             listofQueries.add(example);
         }
 
-        // format response
         Queries queries = new Queries(listofQueries);
-        // return queries.toJSON();
         return queries;
     }
 
     /*
-     * TODO
      * this is an example Query return endpoint
      */
     @GetMapping(value = "/exampleQuery")
@@ -105,51 +66,12 @@ public class QueryController {
     }
 
     /*
-     * TODO finish endpoint
      * this is the document comparison endpoint. (in progress)
      */
     // @GetMapping(value = "/compare")
     // public void compareDocuments(@RequestBody Object param) {
 
     // }
-
-    // helper function
-    private String runPythonScript() {
-
-        String returnString = "";
-        try {
-            // using the Runtime exec method:
-            String s = "";
-            Process p = Runtime.getRuntime().exec("python " + EXACT_FILE_PATH + "webScraper.py");
-
-            BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
-
-            // (kept just in case errors are needed for debug)
-            // BufferedReader stdError = new BufferedReader(new
-            // InputStreamReader(p.getErrorStream()));
-
-            // read the output from the command
-            System.out.println("Here is the standard output of the command:\n");
-            while ((s = stdInput.readLine()) != null) {
-                returnString += s;
-                System.out.println(s);
-            }
-
-            // read any errors from the attempted command (kept just in case errors are
-            // needed for debug)
-            // System.out.println("Here is the standard error of the command (if any):\n");
-            // while ((s = stdError.readLine()) != null) {
-            // System.out.println(s);
-            // }
-
-        } catch (IOException e) {
-            System.out.println("exception happened: ");
-            e.printStackTrace();
-            System.exit(-1);
-        }
-
-        return returnString;
-    }
 
     private Queries fromBody(String queries) {
         Queries queriesToSend = new Queries();
