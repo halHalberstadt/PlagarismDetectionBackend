@@ -45,27 +45,32 @@ public class ScraperController {
     * results of questions found therein or just the questions found.
     */
    @GetMapping(value = "/word")
-   public String wordDocumentReader(@RequestBody MultipartFile document,
-         @RequestParam(name = "search") boolean search, RedirectAttributes redirectAttributes) {
-      if (document.isEmpty()) {
-         return "ERR: Document is Empty";
+   public Queries wordDocumentReader(@RequestBody MultipartFile multipartFile,
+         @RequestParam(name = "search") boolean search, RedirectAttributes redirectAttributes) throws Exception {
+            System.out.println("check 0");
+      if (multipartFile.isEmpty()) {
+         System.out.println("check 0.1");
+         throw new Exception("ERR: Document is Empty");
       }
+      System.out.println("check 0.2");
       File docFile = new File("src/main/java/com/plagarism/detect/tmp/docFile.docx");
+      System.out.println("check 0.3");
       try {
-         document.transferTo(docFile);
+         multipartFile.transferTo(docFile);
+         System.out.println("check 1");
       } catch (Exception e) {
-         return "ERR: transferTo()";
+         throw new Exception("ERR: transferTo():\n" + e);
       }
       Queries queries = null; // set as null as a fail test case for later.
       String documentName = docFile.getName();
       if (documentName.contains(".docx") || documentName.contains(".doc")) {
-         DocumentReader documentReader = new DocumentReader();
-         documentReader.setDocument(docFile);
+         System.out.println("check 2");
+         DocumentReader documentReader = new DocumentReader(docFile);
+         System.out.println("check 3");
          documentReader.findQuestions();
          queries = documentReader.getQuestionsAsQueries();
       } else {
-         return "ERR: documentReader";
-
+         throw new Exception("ERR: documentReader get questions");
       }
       if (!queries.equals(null) && search) {
          Queries queriesFound = null;
@@ -73,12 +78,12 @@ public class ScraperController {
          try {
             queriesFound = scraper.searchQueries(queries);
          } catch (Exception e) {
-            System.err.println(e.getStackTrace());
+            throw new Exception("ERR: searchQueries" + e);
          }
-         return queriesFound.toJSON();
+         return queriesFound;
       }
       // If none are found, return the empty queries as a not-found signal
-      return queries.toJSON();
+      return queries;
    }
 
    /*

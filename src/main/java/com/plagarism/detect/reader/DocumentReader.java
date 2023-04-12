@@ -73,7 +73,7 @@ public class DocumentReader {
      * NOTE: This function requires the path to the document
      */
     public void setDocument(String documentPath) {
-        this.document = null; // reset document to ensure document isn't re-read.
+        // this.document = null; // reset document to ensure document isn't re-read.
         this.queries.clear(); // clear queries for each document to not confuse where each came from.
         try {
             // set basic variables for document reading.
@@ -94,8 +94,9 @@ public class DocumentReader {
      * necessary information directly from that object.
      */
     public void setDocument(File file) {
-        this.document = null; // reset document to ensure document isn't re-read.
+        // this.document = null; // reset document to ensure document isn't re-read.
         this.queries.clear(); // clear queries for each document to not confuse where each came from.
+        System.out.println("check 4");
         try {
             // set basic variables for document reading.
             this.path = file.getName();
@@ -105,6 +106,7 @@ public class DocumentReader {
              * take, not something I can change but that I am upset about.
             */
             FileInputStream fileInput = new FileInputStream(file);
+            System.out.println("file setdocument");
             this.document = new Document(fileInput);
             this.extension = this.path.substring(path.lastIndexOf("."));
 
