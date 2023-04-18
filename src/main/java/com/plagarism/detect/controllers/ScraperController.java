@@ -51,7 +51,9 @@ public class ScraperController {
          @RequestParam(name = "search") boolean search, RedirectAttributes redirectAttributes) {
       if (document.isEmpty())
          return null;
-      File docFile = new File("src/main/java/com/plagarism/detect/tmp/docFile.docx");
+      String fileExtension = document.getOriginalFilename();
+      fileExtension = fileExtension.substring(fileExtension.indexOf('.'));
+      File docFile = new File("src/main/java/com/plagarism/detect/tmp/docFile" + fileExtension);
       try {
          document.transferTo(docFile);
       } catch (Exception e) {
