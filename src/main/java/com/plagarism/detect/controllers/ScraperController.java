@@ -48,35 +48,34 @@ public class ScraperController {
     */
    @GetMapping(value = "/word")
    public Queries wordDocumentReader(@RequestBody MultipartFile document,
-         @RequestParam(name = "search") boolean search, RedirectAttributes redirectAttributes) {
+         @RequestParam(name = "search") boolean search, RedirectAttributes redirectAttributes) throws Exception{
       if (document.isEmpty())
          return null;
+         
       String fileExtension = document.getOriginalFilename();
       fileExtension = fileExtension.substring(fileExtension.indexOf('.'));
       File docFile = new File("src/main/java/com/plagarism/detect/tmp/docFile" + fileExtension);
-      try {
-         document.transferTo(docFile);
-      } catch (Exception e) {
-         // e.printStackTrace();
-      }
+      document.transferTo(docFile);
       Queries queries = null;
       String documentName = docFile.getName();
+
       if (documentName.contains(".docx") || documentName.contains(".doc")) {
          DocumentReader documentReader = new DocumentReader();
          documentReader.setDocument(docFile);
          documentReader.findQuestions();
          queries = documentReader.getQuestionsAsQueries();
+      } else if (documentName.contains(".txt")) {
+         TextReader textReader = new TextReader();
+         textReader.setDocument(docFile);
+         // throw new Exception("File" + documentName + "not a supported file type.");
       } else {
          // throw new Exception("File" + documentName + "not a supported file type.");
       }
+
       if (!queries.equals(null) && search) {
          Queries queriesFound = null;
          Scraper scraper = new Scraper();
-         try {
-            queriesFound = scraper.searchQueries(queries);
-         } catch (Exception e) {
-            System.err.println(e.getStackTrace());
-         }
+         queriesFound = scraper.searchQueries(queries);
          return queriesFound;
       }
       // 3. if they don't need to be searched for, return found questions

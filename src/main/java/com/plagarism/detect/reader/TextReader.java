@@ -1,5 +1,9 @@
 package com.plagarism.detect.reader;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.ArrayList;
 
 /*
@@ -16,6 +20,16 @@ public class TextReader {
      */
     public void setDocument(String textBody) {
         this.body = textBody;
+    }
+
+    
+    public void setDocument(File textFile) throws Exception {
+        BufferedReader bufferedReader = new BufferedReader(new FileReader(textFile));
+        String docText = "";
+        if(bufferedReader != null)
+            while ((docText += bufferedReader.readLine()) != null);
+        bufferedReader.close();
+        this.body = docText;
     }
 
     /*
