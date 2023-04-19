@@ -50,27 +50,34 @@ public class ScraperController {
    public Queries wordDocumentReader(@RequestBody MultipartFile document,
          @RequestParam(name = "search") boolean search, RedirectAttributes redirectAttributes) {
       if (document.isEmpty()){
+         System.out.println("empty");
          return null;
       }
+
       String fileExtension = document.getOriginalFilename();
       fileExtension = fileExtension.substring(fileExtension.indexOf('.'));
-      File docFile = new File("src/main/java/com/plagarism/detect/tmp/"+fileExtension);
+      Queries queries = null;
+      File docFile = new File("src/main/java/com/plagarism/detect/tmp/docFile"+fileExtension);
+      String documentName = docFile.getName();
+      int fileExtensionLocation = documentName.lastIndexOf('.');
+      
       try {
          document.transferTo(docFile);
       } catch (Exception e) {
-         // e.printStackTrace();
+         e.printStackTrace();
       }
-      Queries queries = null;
-      String documentName = docFile.getName();
-      if (documentName.contains(".docx") || documentName.contains(".doc")) {
+
+      if (documentName.substring(fileExtensionLocation) == ".docx" || documentName.substring(fileExtensionLocation) == ".doc") {
          DocumentReader documentReader = new DocumentReader();
          documentReader.setDocument(docFile);
          documentReader.findQuestions();
          queries = documentReader.getQuestionsAsQueries();
-      } else {
+      } else if(documentName.substring(fileExtensionLocation) == ".txt") {
+         System.out.print("documentName");
          // throw new Exception("File" + documentName + "not a supported file type.");
       }
-      if (!queries.equals(null) && search) {
+
+      if (queries != null && search) {
          Queries queriesFound = null;
          Scraper scraper = new Scraper();
          try {
