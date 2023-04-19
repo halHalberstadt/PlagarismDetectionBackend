@@ -49,9 +49,12 @@ public class ScraperController {
    @GetMapping(value = "/word")
    public Queries wordDocumentReader(@RequestBody MultipartFile document,
          @RequestParam(name = "search") boolean search, RedirectAttributes redirectAttributes) {
-      if (document.isEmpty())
+      if (document.isEmpty()){
          return null;
-      File docFile = new File("src/main/java/com/plagarism/detect/tmp/docFile.docx");
+      }
+      String fileExtension = document.getOriginalFilename();
+      fileExtension = fileExtension.substring(fileExtension.indexOf('.'));
+      File docFile = new File("src/main/java/com/plagarism/detect/tmp/"+fileExtension);
       try {
          document.transferTo(docFile);
       } catch (Exception e) {
