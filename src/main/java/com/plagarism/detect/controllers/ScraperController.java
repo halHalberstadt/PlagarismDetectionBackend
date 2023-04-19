@@ -57,19 +57,18 @@ public class ScraperController {
       File docFile = new File("src/main/java/com/plagarism/detect/tmp/docFile" + fileExtension);
       document.transferTo(docFile);
       Queries queries = null;
-      String documentName = docFile.getName();
 
-      if (documentName.contains(".docx") || documentName.contains(".doc")) {
+      if (fileExtension == ".docx" || fileExtension == ".doc") {
          DocumentReader documentReader = new DocumentReader();
          documentReader.setDocument(docFile);
          documentReader.findQuestions();
          queries = documentReader.getQuestionsAsQueries();
-      } else if (documentName.contains(".txt")) {
+      } else if (fileExtension == ".txt") {
          TextReader textReader = new TextReader();
          textReader.setDocument(docFile);
          // throw new Exception("File" + documentName + "not a supported file type.");
       } else {
-         // throw new Exception("File" + documentName + "not a supported file type.");
+         throw new Exception("File \"" + fileExtension + "\" not a supported file type.");
       }
 
       if (!queries.equals(null) && search) {
