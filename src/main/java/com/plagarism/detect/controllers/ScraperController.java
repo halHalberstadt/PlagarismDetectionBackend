@@ -19,9 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RestController
 public class ScraperController {
 
-   // NOTE this needs to be changed once deployed
-   public static final String RELATIVE_FILE_PATH = "src\\main\\java\\com\\plagarism\\detect\\script\\";
-   public static final String EXACT_FILE_PATH = "C:\\Users\\smhal\\Documents\\Coding\\detect\\src\\main\\java\\com\\plagarism\\detect\\script\\";
+   public static final String FILE_PATH = "src\\main\\java\\com\\plagarism\\detect\\script\\";
 
    /*
     * textDocumentReader() reads a document read in
@@ -145,7 +143,7 @@ public class ScraperController {
 
    private static ArrayList<String> findDocuments() {
       // Folder path and initialization of returned list
-      File folder = new File(EXACT_FILE_PATH);
+      File folder = new File(FILE_PATH);
       ArrayList<String> listOfFileLocations = new ArrayList<String>();
 
       // grab all the files
@@ -158,7 +156,7 @@ public class ScraperController {
             // are grabbed
 
             // Need to format the file location to get all exact paths
-            listOfFileLocations.add(EXACT_FILE_PATH + listOfFiles[i].getName());
+            listOfFileLocations.add(FILE_PATH + listOfFiles[i].getName());
          }
       }
 
