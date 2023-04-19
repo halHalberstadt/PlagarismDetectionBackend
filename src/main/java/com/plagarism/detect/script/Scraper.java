@@ -12,6 +12,8 @@ import com.plagarism.detect.domain.Query;
 
 /*
  * This class is an adaptation of a python web scraper.
+ * Original Credit to Michael Silva and Julian Diaz
+ * I mostly just swapped the languages to easily work on this project.
  */
 public class Scraper {
 
@@ -21,7 +23,7 @@ public class Scraper {
 
     /*
      * This is an application of the longest common subsequence between 2
-     * strings.
+     * strings. This is the one part that I could not quite make it work.
      */
     // public void lcs() {
 
@@ -36,14 +38,13 @@ public class Scraper {
             String queryText;
 
             for (Query query : queries.getQueries()) {
-                double common = 0.0, previous;
+                double common = 0.0;
                 Document doc = Jsoup.connect(BASE_URL + formatQuery(query)).get();
                 queryText = query.getQueryText();
                 Elements divElements = doc.getElementsByTag("a");
                 for (Element element : divElements) {
                     String temp = element.toString();
                     // needed to add more than just a '\n' to get the information needed
-                    previous = common;
                     if (temp.length() > 1)
                         if (temp.contains("www.chegg.com")) {
                             temp = cleanReturnedURL(temp);
