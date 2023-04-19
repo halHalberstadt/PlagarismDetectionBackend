@@ -47,25 +47,32 @@ public class ScraperController {
    @GetMapping(value = "/word")
    public Queries wordDocumentReader(@RequestBody MultipartFile document,
          @RequestParam(name = "search") boolean search, RedirectAttributes redirectAttributes) {
-      if (document.isEmpty())
+      if (document.isEmpty()){
          return null;
-      File docFile = new File("src/main/java/com/plagarism/detect/tmp/docFile.docx");
+      }
+
+      String documentExtension = document.getOriginalFilename();
+      documentExtension = documentExtension.substring(documentExtension.lastIndexOf('.'));
+      File docFile = new File("src/main/java/com/plagarism/detect/tmp/docFile" + documentExtension + "");
+
       try {
          document.transferTo(docFile);
       } catch (Exception e) {
          // e.printStackTrace();
       }
-      Queries queries = null;
-      String documentName = docFile.getName();
-      if (documentName.contains(".docx") || documentName.contains(".doc")) {
+
+      Queries queries = new Queries();
+      // NOTE this needs to use .contains for some reason
+      if (documentExtension.contains(".docx") || documentExtension.contains(".doc")) {
          DocumentReader documentReader = new DocumentReader();
          documentReader.setDocument(docFile);
          documentReader.findQuestions();
          queries = documentReader.getQuestionsAsQueries();
-      } else {
+      } else if(documentExtension.contains(".txt")) {
          // throw new Exception("File" + documentName + "not a supported file type.");
       }
-      if (!queries.equals(null) && search) {
+
+      if (!queries.isEmpty() && search) {
          Queries queriesFound = null;
          Scraper scraper = new Scraper();
          try {
@@ -75,9 +82,6 @@ public class ScraperController {
          }
          return queriesFound;
       }
-      // 3. if they don't need to be searched for, return found questions
-      // I hate that I need to specify this but I cannot re-route and return
-      // the objects I want, will fix in cleanup after this all works.
       return queries;
    }
 
