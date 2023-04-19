@@ -10,7 +10,9 @@ import com.plagarism.detect.reader.DocumentReader;
 import com.plagarism.detect.reader.TextReader;
 import com.plagarism.detect.script.Scraper;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.util.ArrayList;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,9 +34,9 @@ public class ScraperController {
       textReader.setDocument(document);
       ArrayList<String> questions;
       if (orderedQuestions) {
-         questions = textReader.findOrderedQuestions();
+         questions = textReader.findOrderedQuestionsText();
       } else {
-         questions = textReader.findUnorderedQuestions();
+         questions = textReader.findUnorderedQuestionsText();
       }
       return questions;
    }
@@ -45,27 +47,42 @@ public class ScraperController {
     * results of questions found therein or just the questions found.
     */
    @GetMapping(value = "/word")
-   public Queries wordDocumentReader(@RequestBody MultipartFile document,
-         @RequestParam(name = "search") boolean search, RedirectAttributes redirectAttributes) {
-      if (document.isEmpty())
+   public Queries wordDocumentReader(@RequestBody(required = false) MultipartFile document,
+         @RequestParam(name = "search") boolean search, RedirectAttributes redirectAttributes) throws Exception {
+      if (document == null){
          return null;
-      File docFile = new File("src/main/java/com/plagarism/detect/tmp/docFile.docx");
+      }
+
+      String documentExtension = document.getOriginalFilename();
+      documentExtension = documentExtension.substring(documentExtension.lastIndexOf('.'));
+      File docFile = new File("src/main/java/com/plagarism/detect/tmp/docFile" + documentExtension + "");
+
       try {
          document.transferTo(docFile);
       } catch (Exception e) {
          // e.printStackTrace();
       }
-      Queries queries = null;
-      String documentName = docFile.getName();
-      if (documentName.contains(".docx") || documentName.contains(".doc")) {
+
+      Queries queries = new Queries();
+      // NOTE this needs to use .contains for some reason that I can't figure out but it is adding an extra invisible character
+      if (documentExtension.contains(".docx") || documentExtension.contains(".doc")) {
          DocumentReader documentReader = new DocumentReader();
          documentReader.setDocument(docFile);
          documentReader.findQuestions();
          queries = documentReader.getQuestionsAsQueries();
+      } else if(documentExtension.contains(".txt")) {
+         TextReader textReader = new TextReader();
+         String docText = "";
+         for (byte docByte : document.getBytes()) {
+            docText += (char) docByte;
+            System.out.print((char) docByte);
+         }
+         textReader.setDocument(docText);
+         queries = textReader.getQueries();
       } else {
          // throw new Exception("File" + documentName + "not a supported file type.");
       }
-      if (!queries.equals(null) && search) {
+      if (!queries.isEmpty() && search) {
          Queries queriesFound = null;
          Scraper scraper = new Scraper();
          try {
@@ -75,9 +92,6 @@ public class ScraperController {
          }
          return queriesFound;
       }
-      // 3. if they don't need to be searched for, return found questions
-      // I hate that I need to specify this but I cannot re-route and return
-      // the objects I want, will fix in cleanup after this all works.
       return queries;
    }
 
@@ -108,7 +122,7 @@ public class ScraperController {
    }
 
    /*
-    * Helper functions
+    * tester functions
     */
 
    @SuppressWarnings(value = "unused")
@@ -124,20 +138,19 @@ public class ScraperController {
          try {
             reader.findQuestions();
          } catch (Exception e) {
-
             System.out.println("error finding questions error = " + e);
          }
          // now we read out questions found if any
-         // ArrayList<String> questions = reader.getQuestions();
-         // if (reader.getQuestions().size() == 0) {
-         // System.out.println("No questions found");
-         // } else {
-         // System.out.println("Questions found");
-         // int numberQuestion = 1;
-         // for (String question : questions) {
-         // System.out.println("" + (numberQuestion++) + " - " + question);
-         // }
-         // }
+         ArrayList<String> questions = reader.getQuestions();
+         if (reader.getQuestions().size() == 0) {
+            System.out.println("No questions found");
+         } else {
+            System.out.println("Questions found");
+            int numberQuestion = 1;
+            for (String question : questions) {
+               System.out.println("" + (numberQuestion++) + " - " + question);
+            }
+         }
       }
    }
 

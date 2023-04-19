@@ -39,6 +39,11 @@ public class Queries {
         this.listOfQueries.add(new Query(found, query));
     }
 
+    public boolean isEmpty(){
+        if(listOfQueries.size() < 1) return true;
+        else return false;
+    }
+
     // Getters
 
     public Query[] getQueries() {
