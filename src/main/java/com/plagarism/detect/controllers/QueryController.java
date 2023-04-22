@@ -2,6 +2,7 @@ package com.plagarism.detect.controllers;
 
 import java.util.ArrayList;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,13 +15,14 @@ import com.plagarism.detect.script.Scraper;
 public class QueryController {
 
     // NOTE this needs to be changed once deployed
-    public static final String RELATIVE_FILE_PATH = "src\\main\\java\\com\\plagarism\\detect\\script\\";
-    public static final String EXACT_FILE_PATH = "C:\\Users\\smhal\\Documents\\Coding\\detect\\src\\main\\java\\com\\plagarism\\detect\\script\\";
+    // public static final String ORIGIN_URL = "http://website-spring.herokuapp.com/";
+    public static final String ORIGIN_URL = "http://localhost:3000";
 
     /*
      * getQueryResults returns the results for a string input like
      * those from textboxes
      */
+    @CrossOrigin(origins = ORIGIN_URL)
     @GetMapping(value = "/scraper")
     public Queries getQueryResults(@RequestBody String body) {
         // System.out.println(body);
@@ -36,11 +38,11 @@ public class QueryController {
     }
 
     /*
-     * TODO
      * this is an example Queries return endpoint
      */
+    @CrossOrigin(origins = ORIGIN_URL)
     @GetMapping(value = "/exampleQueries")
-    public Queries exampleQueries() {
+    public String exampleQueries() {
         Query example;
         ArrayList<Query> listofQueries = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
@@ -51,12 +53,13 @@ public class QueryController {
         }
 
         Queries queries = new Queries(listofQueries);
-        return queries;
+        return queries.toJSON();
     }
 
     /*
      * this is an example Query return endpoint
      */
+    @CrossOrigin(origins = ORIGIN_URL)
     @GetMapping(value = "/exampleQuery")
     public Query exampleQuery() {
         Query example = new Query();

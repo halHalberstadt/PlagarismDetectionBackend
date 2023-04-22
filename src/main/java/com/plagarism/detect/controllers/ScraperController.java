@@ -10,10 +10,10 @@ import com.plagarism.detect.reader.DocumentReader;
 import com.plagarism.detect.reader.TextReader;
 import com.plagarism.detect.script.Scraper;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.util.ArrayList;
+
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,11 +22,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class ScraperController {
 
    public static final String FILE_PATH = "src\\main\\java\\com\\plagarism\\detect\\script\\";
+   // public static final String ORIGIN_URL = "http://website-spring.herokuapp.com/";
+   public static final String ORIGIN_URL = "http://localhost:3000";
 
    /*
     * textDocumentReader() reads a document read in
     * as a string rather than an actual file.
     */
+   @CrossOrigin(origins = ORIGIN_URL) // TODO get other url to allow from
    @GetMapping(value = "/text")
    public ArrayList<String> textDocuemntReader(@RequestBody String document,
          @RequestParam("ordered") boolean orderedQuestions) {
@@ -46,10 +49,11 @@ public class ScraperController {
     * docFile and then reads in the information and returns the search
     * results of questions found therein or just the questions found.
     */
+   @CrossOrigin(origins = ORIGIN_URL)
    @GetMapping(value = "/word")
    public Queries wordDocumentReader(@RequestBody(required = false) MultipartFile document,
          @RequestParam(name = "search") boolean search, RedirectAttributes redirectAttributes) throws Exception {
-      if (document == null){
+      if (document == null) {
          return null;
       }
 
@@ -64,13 +68,14 @@ public class ScraperController {
       }
 
       Queries queries = new Queries();
-      // NOTE this needs to use .contains for some reason that I can't figure out but it is adding an extra invisible character
+      // NOTE this needs to use .contains for some reason that I can't figure out but
+      // it is adding an extra invisible character
       if (documentExtension.contains(".docx") || documentExtension.contains(".doc")) {
          DocumentReader documentReader = new DocumentReader();
          documentReader.setDocument(docFile);
          documentReader.findQuestions();
          queries = documentReader.getQuestionsAsQueries();
-      } else if(documentExtension.contains(".txt")) {
+      } else if (documentExtension.contains(".txt")) {
          TextReader textReader = new TextReader();
          String docText = "";
          for (byte docByte : document.getBytes()) {
