@@ -15,6 +15,7 @@ import java.util.ArrayList;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -30,7 +31,7 @@ public class ScraperController {
     * as a string rather than an actual file.
     */
    @CrossOrigin(origins = ORIGIN_URL)
-   @GetMapping(value = "/text")
+   @PostMapping(value = "/text")
    public ArrayList<String> textDocuemntReader(@RequestBody String document,
          @RequestParam("ordered") boolean orderedQuestions) {
       TextReader textReader = new TextReader();
@@ -50,7 +51,7 @@ public class ScraperController {
     * results of questions found therein or just the questions found.
     */
    @CrossOrigin(origins = ORIGIN_URL)
-   @GetMapping(value = "/word")
+   @PostMapping(value = "/word")
    public Queries wordDocumentReader(@RequestBody(required = false) MultipartFile document,
          @RequestParam(name = "search") boolean search, RedirectAttributes redirectAttributes) throws Exception {
       if (document == null) {
