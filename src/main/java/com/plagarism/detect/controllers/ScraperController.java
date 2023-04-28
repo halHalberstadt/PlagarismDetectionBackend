@@ -29,7 +29,7 @@ public class ScraperController {
     * textDocumentReader() reads a document read in
     * as a string rather than an actual file.
     */
-   @CrossOrigin(origins = ORIGIN_URL) // TODO get other url to allow from
+   @CrossOrigin(origins = ORIGIN_URL)
    @GetMapping(value = "/text")
    public ArrayList<String> textDocuemntReader(@RequestBody String document,
          @RequestParam("ordered") boolean orderedQuestions) {

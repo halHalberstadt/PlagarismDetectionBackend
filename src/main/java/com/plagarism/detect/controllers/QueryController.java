@@ -42,7 +42,7 @@ public class QueryController {
      */
     @CrossOrigin(origins = ORIGIN_URL)
     @GetMapping(value = "/exampleQueries")
-    public String exampleQueries() {
+    public Queries exampleQueries() {
         Query example;
         ArrayList<Query> listofQueries = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
@@ -53,7 +53,7 @@ public class QueryController {
         }
 
         Queries queries = new Queries(listofQueries);
-        return queries.toJSON();
+        return queries;
     }
 
     /*
