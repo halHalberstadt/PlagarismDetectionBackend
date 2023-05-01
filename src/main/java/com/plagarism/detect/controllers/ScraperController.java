@@ -53,7 +53,7 @@ public class ScraperController {
     */
    @CrossOrigin(origins = ORIGIN_URL)
    @PostMapping(value = "/word")
-   public String wordDocumentReader(@RequestBody(required = false) MultipartFile document,
+   public Query[] wordDocumentReader(@RequestBody(required = false) MultipartFile document,
          @RequestParam(name = "search") boolean search, RedirectAttributes redirectAttributes) throws Exception {
       if (document == null) {
          return null;
@@ -97,17 +97,9 @@ public class ScraperController {
          } catch (Exception e) {
             System.err.println(e.getStackTrace());
          }
-         return printJSONString(queriesFound);
+         return queriesFound.getQueries();
       }
-      return printJSONString(queries);
-   }
-
-   private String printJSONString(Queries queries){
-      String questions = "";
-      for (Query query : queries.getQueries()) {
-         questions += query.getQueryText() + ",";
-      }
-      return questions;
+      return queries.getQueries();
    }
 
    /*
