@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.plagarism.detect.domain.Queries;
+import com.plagarism.detect.domain.Query;
 import com.plagarism.detect.reader.DocumentReader;
 import com.plagarism.detect.reader.TextReader;
 import com.plagarism.detect.script.Scraper;
@@ -52,7 +53,7 @@ public class ScraperController {
     */
    @CrossOrigin(origins = ORIGIN_URL)
    @PostMapping(value = "/word")
-   public Queries wordDocumentReader(@RequestBody(required = false) MultipartFile document,
+   public String wordDocumentReader(@RequestBody(required = false) MultipartFile document,
          @RequestParam(name = "search") boolean search, RedirectAttributes redirectAttributes) throws Exception {
       if (document == null) {
          return null;
@@ -96,9 +97,17 @@ public class ScraperController {
          } catch (Exception e) {
             System.err.println(e.getStackTrace());
          }
-         return queriesFound;
+         return printJSONString(queriesFound);
       }
-      return queries;
+      return printJSONString(queries);
+   }
+
+   private String printJSONString(Queries queries){
+      String questions = "";
+      for (Query query : queries.getQueries()) {
+         questions += query.getQueryText() + ",";
+      }
+      return questions;
    }
 
    /*
