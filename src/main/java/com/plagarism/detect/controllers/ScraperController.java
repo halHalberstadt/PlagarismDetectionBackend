@@ -24,8 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class ScraperController {
 
    public static final String FILE_PATH = "src\\main\\java\\com\\plagarism\\detect\\script\\";
-   // public static final String ORIGIN_URL = "http://website-spring.herokuapp.com/";
-   public static final String ORIGIN_URL = "https://capstone-frontend-plagarism.herokuapp.com/scraper";
+   public static final String ORIGIN_URL = "http://capstone-frontend-plagarism.herokuapp.com/";
 
    /*
     * textDocumentReader() reads a document read in

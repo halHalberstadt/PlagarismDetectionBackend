@@ -14,9 +14,7 @@ import com.plagarism.detect.script.Scraper;
 @RestController
 public class QueryController {
 
-    // NOTE this needs to be changed once deployed
-    // public static final String ORIGIN_URL = "http://website-spring.herokuapp.com/";
-    public static final String ORIGIN_URL = "https://capstone-frontend-plagarism.herokuapp.com/scraper";
+    public static final String ORIGIN_URL = "http://capstone-frontend-plagarism.herokuapp.com/";
 
     /*
      * getQueryResults returns the results for a string input like
