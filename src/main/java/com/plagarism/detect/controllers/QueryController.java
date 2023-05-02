@@ -20,7 +20,7 @@ public class QueryController {
      * getQueryResults returns the results for a string input like
      * those from textboxes
      */
-    @CrossOrigin(origins = ORIGIN_URL)
+    @CrossOrigin(origins = {ORIGIN_URL, "http://localhost:3000/"})
     @GetMapping(value = "/scraper")
     public Queries getQueryResults(@RequestBody String body) {
         // System.out.println(body);
@@ -38,7 +38,7 @@ public class QueryController {
     /*
      * this is an example Queries return endpoint
      */
-    @CrossOrigin(origins = ORIGIN_URL)
+    @CrossOrigin(origins = {ORIGIN_URL, "http://localhost:3000/"})
     @GetMapping(value = "/exampleQueries")
     public Queries exampleQueries() {
         Query example;
@@ -57,7 +57,7 @@ public class QueryController {
     /*
      * this is an example Query return endpoint
      */
-    @CrossOrigin(origins = ORIGIN_URL)
+    @CrossOrigin(origins = {ORIGIN_URL, "http://localhost:3000/"})
     @GetMapping(value = "/exampleQuery")
     public Query exampleQuery() {
         Query example = new Query();
