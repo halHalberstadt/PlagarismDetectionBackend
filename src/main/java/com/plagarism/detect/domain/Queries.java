@@ -16,10 +16,6 @@ public class Queries {
         this.listOfQueries = queries;
     }
 
-    public Queries(String queries) {
-        // grab "queries" and then find the 
-    }
-
     /*
      * addQuery returns the text of the query in case the
      * user wants to check which query was added
@@ -78,22 +74,5 @@ public class Queries {
             queryNumber++;
         }
         return returnedQueries;
-    }
-
-    public String toJSON() {
-        String returnString = "{\n" + "\t\"numberQueries\": " + this.numberQueries + ",\n\t\"queries\": [\n";
-
-        for (Query iterableQuery : this.listOfQueries) {
-            returnString += "\t\t{\n";
-            returnString += "\t\t\t\"foundOnline\": "+ iterableQuery.getFoundOnline() + "\n";
-            returnString += "\t\t\t\"queryText\": \""+ iterableQuery.getQueryText() + "\"\n";
-            returnString += "\t\t}";
-            if(iterableQuery.equals(listOfQueries.get(this.numberQueries-1)))
-                returnString += "\n";
-            else 
-                returnString += ",\n";
-        }
-        returnString += "\t]\n}";
-        return returnString;
     }
 }

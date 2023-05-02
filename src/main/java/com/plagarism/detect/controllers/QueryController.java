@@ -16,7 +16,7 @@ public class QueryController {
 
     // NOTE this needs to be changed once deployed
     // public static final String ORIGIN_URL = "http://website-spring.herokuapp.com/";
-    public static final String ORIGIN_URL = "http://localhost:3000";
+    public static final String ORIGIN_URL = "http://capstone-frontend-plagarism.herokuapp.com/scraper";
 
     /*
      * getQueryResults returns the results for a string input like
