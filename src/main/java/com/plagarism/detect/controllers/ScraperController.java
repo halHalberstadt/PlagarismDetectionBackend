@@ -81,8 +81,10 @@ public class ScraperController {
       if (documentExtension.contains(".docx") || documentExtension.contains(".doc")) {
          DocumentReader documentReader = new DocumentReader();
          documentReader.setDocument(docFile);
+         System.out.println(docFile);
          documentReader.findQuestions();
          queries = documentReader.getQuestionsAsQueries();
+         System.out.println(queries);
       } else if (documentExtension.contains(".txt")) {
          TextReader textReader = new TextReader();
          String docText = "";
