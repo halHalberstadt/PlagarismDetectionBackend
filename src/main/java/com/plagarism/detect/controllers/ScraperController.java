@@ -72,7 +72,7 @@ public class ScraperController {
       try {
          document.transferTo(docFile);
       } catch (Exception e) {
-         // e.printStackTrace();
+         e.printStackTrace();
       }
 
       Queries queries = new Queries();
@@ -81,7 +81,6 @@ public class ScraperController {
       if (documentExtension.contains(".docx") || documentExtension.contains(".doc")) {
          DocumentReader documentReader = new DocumentReader();
          documentReader.setDocument(docFile);
-         System.out.println(docFile);
          documentReader.findQuestions();
          queries = documentReader.getQuestionsAsQueries();
          System.out.println(queries);
