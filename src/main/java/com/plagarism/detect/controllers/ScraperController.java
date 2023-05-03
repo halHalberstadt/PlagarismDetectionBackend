@@ -95,8 +95,8 @@ public class ScraperController {
       } else {
          // throw new Exception("File" + documentName + "not a supported file type.");
       }
+      Queries queriesFound = null;
       if (!queries.isEmpty() && search) {
-         Queries queriesFound = null;
          Scraper scraper = new Scraper();
          try {
             queriesFound = scraper.searchQueries(queries);
@@ -105,7 +105,7 @@ public class ScraperController {
          }
          return queriesFound;
       }
-      return queries;
+      return queriesFound;
    }
 
    /*
