@@ -58,16 +58,20 @@ public class ScraperController {
     */
    @CrossOrigin(origins = {ORIGIN_URL, "http://localhost:3000"})
    @PostMapping(value = "/word")
-   public Queries wordDocumentReader(@RequestBody(required = false) MultipartFile document,
-         @RequestParam(name = "search") boolean search, RedirectAttributes redirectAttributes) throws Exception {
-      
+   public Queries wordDocumentReader(@RequestBody MultipartFile document,
+         @RequestParam(name = "search") boolean search) throws Exception {
       if (document == null) {
+         System.out.println("document is null");
          return null;
       }
 
       String documentExtension = document.getOriginalFilename();
       documentExtension = documentExtension.substring(documentExtension.lastIndexOf('.'));
-      File docFile = new File("src/main/java/com/plagarism/detect/tmp/docFile" + documentExtension + "");
+      document.transferTo(new File("../tmp/docFile" + documentExtension));
+      System.out.println("gere");
+      File docFile = new File("../tmp/docFile" + documentExtension);
+      
+      System.out.println("Docfile " + docFile.getAbsolutePath());
 
       try {
          document.transferTo(docFile);
@@ -76,8 +80,6 @@ public class ScraperController {
       }
 
       Queries queries = new Queries();
-      // NOTE this needs to use .contains for some reason that I can't figure out but
-      // it is adding an extra invisible character
       if (documentExtension.contains(".docx") || documentExtension.contains(".doc")) {
          DocumentReader documentReader = new DocumentReader();
          documentReader.setDocument(docFile);
@@ -94,7 +96,7 @@ public class ScraperController {
          textReader.setDocument(docText);
          queries = textReader.getQueries();
       } else {
-         // throw new Exception("File" + documentName + "not a supported file type.");
+         // throw new Exception("File" + documentExtension + "not a supported file type.");
       }
       Queries queriesFound = null;
       if (!queries.isEmpty() && search) {
