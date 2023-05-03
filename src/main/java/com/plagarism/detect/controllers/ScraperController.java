@@ -30,7 +30,7 @@ public class ScraperController {
     * textDocumentReader() reads a document read in
     * as a string rather than an actual file.
     */
-   @CrossOrigin(origins = {ORIGIN_URL, "https://localhost:3000"})
+   @CrossOrigin(origins = {ORIGIN_URL, "http://localhost:3000"})
    @PostMapping(value = "/text")
    public ArrayList<String> textDocuemntReader(@RequestBody String document,
          @RequestParam("ordered") boolean orderedQuestions) {
@@ -42,6 +42,8 @@ public class ScraperController {
       } else {
          questions = textReader.findUnorderedQuestionsText();
       }
+
+
       return questions;
    }
 
@@ -50,7 +52,7 @@ public class ScraperController {
     * docFile and then reads in the information and returns the search
     * results of questions found therein or just the questions found.
     */
-   @CrossOrigin(origins = {ORIGIN_URL, "https://localhost:3000"})
+   @CrossOrigin(origins = {ORIGIN_URL, "http://localhost:3000"})
    @PostMapping(value = "/word")
    public Queries wordDocumentReader(@RequestBody(required = false) MultipartFile document,
          @RequestParam(name = "search") boolean search, RedirectAttributes redirectAttributes) throws Exception {
