@@ -54,7 +54,7 @@ public class DocumentReader {
      * NOTE: This function requires the path to the document
      */
     public void setDocument(String documentPath) {
-        // this.document = null; // reset document to ensure document isn't re-read.
+        this.document = null; // reset document to ensure document isn't re-read.
         this.queries.clear(); // clear queries for each document to not confuse where each came from.
         try {
             // set basic variables for document reading.
@@ -71,7 +71,7 @@ public class DocumentReader {
     }
 
     public void setDocument(File file) {
-        // this.document = null; // reset document to ensure document isn't re-read.
+        this.document = null; // reset document to ensure document isn't re-read.
         this.queries.clear(); // clear queries for each document to not confuse where each came from.
         try {
             // set basic variables for document reading.

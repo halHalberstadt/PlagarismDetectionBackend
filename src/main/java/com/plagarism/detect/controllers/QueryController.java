@@ -49,7 +49,6 @@ public class QueryController {
             example.setQueryText("Example Question #" + i + "?");
             listofQueries.add(example);
         }
-
         Queries queries = new Queries(listofQueries);
         return queries;
     }

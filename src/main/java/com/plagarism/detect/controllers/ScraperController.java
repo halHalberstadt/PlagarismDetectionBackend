@@ -32,7 +32,8 @@ public class ScraperController {
     */
    @CrossOrigin(origins = {ORIGIN_URL, "http://localhost:3000"})
    @PostMapping(value = "/text")
-   public ArrayList<String> textDocuemntReader(@RequestBody String document,
+   // public ArrayList<String> textDocuemntReader(@RequestBody String document,
+   public Queries textDocuemntReader(@RequestBody String document,
          @RequestParam("ordered") boolean orderedQuestions) {
       TextReader textReader = new TextReader();
       textReader.setDocument(document);
@@ -43,8 +44,11 @@ public class ScraperController {
          questions = textReader.findUnorderedQuestionsText();
       }
 
-
-      return questions;
+      Scraper scraper = new Scraper();
+      Queries queries = new Queries();
+      queries.addQuery(false, questions.get(0));
+      return scraper.searchQueries(queries);
+      // return questions;
    }
 
    /*
@@ -56,6 +60,7 @@ public class ScraperController {
    @PostMapping(value = "/word")
    public Queries wordDocumentReader(@RequestBody(required = false) MultipartFile document,
          @RequestParam(name = "search") boolean search, RedirectAttributes redirectAttributes) throws Exception {
+      
       if (document == null) {
          return null;
       }
