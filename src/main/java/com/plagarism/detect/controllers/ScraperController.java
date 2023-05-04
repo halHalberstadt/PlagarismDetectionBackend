@@ -36,7 +36,7 @@ public class ScraperController {
     */
    @CrossOrigin(origins = {ORIGIN_URL, "https://localhost:3000"})
    @PostMapping(value = "/text")
-   public ArrayList<String> textDocuemntReader(@RequestBody String document,
+   public Queries textDocuemntReader(@RequestBody String document,
          @RequestParam("ordered") boolean orderedQuestions) {
       TextReader textReader = new TextReader();
       textReader.setDocument(document);
@@ -46,9 +46,14 @@ public class ScraperController {
       } else {
          questions = textReader.findUnorderedQuestionsText();
       }
+      Scraper scraper = new Scraper();
+      Queries queries = new Queries();
+      for (String string : questions) {
+         queries.addQuery(false, string);
+      }
+      queries = scraper.searchQueries(queries);
 
-
-      return questions;
+      return queries;
    }
 
    /*
