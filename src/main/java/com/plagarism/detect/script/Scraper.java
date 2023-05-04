@@ -33,6 +33,7 @@ public class Scraper {
      * 
      */
     public Queries searchQueries(Queries queries) {
+        System.out.println("search");
         try {
             Queries response = new Queries();
             String queryText;
@@ -60,7 +61,7 @@ public class Scraper {
             }
             return response;
         } catch (Exception e) {
-            System.err.println(e.getStackTrace());
+            System.err.println(e);
         }
         return null;
     }

@@ -85,14 +85,13 @@ public class ScraperController {
          String docText = "";
          for (byte docByte : document.getBytes()) {
             docText += (char) docByte;
-            System.out.print((char) docByte);
          }
          textReader.setDocument(docText);
          queries = textReader.getQueries();
       } else {
          // throw new Exception("File" + documentExtension + "not a supported file type.");
       }
-      if (!queries.isEmpty() && search) {
+      if (!(queries == null) && search) {
          Queries queriesFound = null;
          Scraper scraper = new Scraper();
          try {

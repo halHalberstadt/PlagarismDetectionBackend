@@ -120,25 +120,6 @@ public class DocumentReader {
         }
 
     }
-    /*
-     * NOTE: removed since PDF's are too difficult to parse at this time.
-     */
-    // public void setPDFDocument(String path) throws IOException {
-    // File file = new File(path);
-    // PDDocument doc = new PDDocument();
-    // try
-    // {
-    // doc = PDDocument.load(file);
-    // System.out.println("PDF initialized " );
-
-    // } finally
-    // {
-    // if( doc != null )
-    // {
-    // doc.close();
-    // }
-    // }
-    // }
 
     /*
      * readDocument is meant to just read out what the document has without
@@ -160,7 +141,6 @@ public class DocumentReader {
     }
 
     /*
-     * TODO finish commenting
      * getDocumentText() this method returns a arrayList of the entire document's
      * text
      * with each line being a entry to the document text.
@@ -229,7 +209,9 @@ public class DocumentReader {
             // if the paragraph is in an ordered list, save question as a query.
             if (isFormattedOrderedList(para)) {
                 // I need to trim up the line found in the formatted list.
-                this.queries.add(para.toString(SaveFormat.TEXT).trim());
+                // System.out.println(para.getText());
+                this.queries.add(para.getText());
+                // this.queries.add(para.toString(SaveFormat.TEXT).trim());
             }
         }
     }
@@ -244,11 +226,7 @@ public class DocumentReader {
         if (paragraph.getListFormat().isListItem()) {
             // For the non-null objects we need to get how the "dots/letters" are formatted.
             byte[] bites = paragraph.getListFormat().getListLevel().getNumberFormat().getBytes(StandardCharsets.UTF_8);
-            // The ordered list that we are looking for happen to only have a byte array
-            // size of 2
-            // I am not sure why exactly, but this could break on larger lists due to data
-            // storage.
-            return bites.length == 2;
+            return bites.length == 2 || bites.length == 3;
         }
         return false;
     }
@@ -327,6 +305,7 @@ public class DocumentReader {
         Queries newQueries = new Queries();
         for (String text : this.queries) {
             newQueries.addQuery(false, text);
+            // System.out.println(text);   
         }
         return newQueries;
     }
