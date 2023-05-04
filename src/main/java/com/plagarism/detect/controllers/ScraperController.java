@@ -58,7 +58,7 @@ public class ScraperController {
     */
    @CrossOrigin(origins = {ORIGIN_URL, "http://localhost:3000"})
    @PostMapping(value = "/word")
-   public Queries wordDocumentReader(@RequestParam("file") MultipartFile document,
+   public Queries wordDocumentReader(@RequestParam MultipartFile document,
          @RequestParam(name = "search") boolean search, RedirectAttributes redirectAttributes) throws Exception {
       if (document == null) {
          // System.out.println("empty");
