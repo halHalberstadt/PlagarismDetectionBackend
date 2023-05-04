@@ -11,6 +11,9 @@ import com.plagarism.detect.reader.DocumentReader;
 import com.plagarism.detect.reader.TextReader;
 import com.plagarism.detect.script.Scraper;
 
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.File;
 import java.util.ArrayList;
 
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 
 @RestController
 public class ScraperController {
@@ -30,10 +34,9 @@ public class ScraperController {
     * textDocumentReader() reads a document read in
     * as a string rather than an actual file.
     */
-   @CrossOrigin(origins = {ORIGIN_URL, "http://localhost:3000"})
+   @CrossOrigin(origins = {ORIGIN_URL, "https://localhost:3000"})
    @PostMapping(value = "/text")
-   // public ArrayList<String> textDocuemntReader(@RequestBody String document,
-   public Queries textDocuemntReader(@RequestBody String document,
+   public ArrayList<String> textDocuemntReader(@RequestBody String document,
          @RequestParam("ordered") boolean orderedQuestions) {
       TextReader textReader = new TextReader();
       textReader.setDocument(document);
@@ -44,11 +47,8 @@ public class ScraperController {
          questions = textReader.findUnorderedQuestionsText();
       }
 
-      Scraper scraper = new Scraper();
-      Queries queries = new Queries();
-      queries.addQuery(false, questions.get(0));
-      return scraper.searchQueries(queries);
-      // return questions;
+
+      return questions;
    }
 
    /*
@@ -58,34 +58,28 @@ public class ScraperController {
     */
    @CrossOrigin(origins = {ORIGIN_URL, "http://localhost:3000"})
    @PostMapping(value = "/word")
-   public Queries wordDocumentReader(@RequestBody MultipartFile document,
-         @RequestParam(name = "search") boolean search) throws Exception {
+   public Queries wordDocumentReader(@RequestParam("file") MultipartFile document,
+         @RequestParam(name = "search") boolean search, RedirectAttributes redirectAttributes) throws Exception {
       if (document == null) {
-         System.out.println("document is null");
+         // System.out.println("empty");
          return null;
       }
 
       String documentExtension = document.getOriginalFilename();
-      documentExtension = documentExtension.substring(documentExtension.lastIndexOf('.'));
-      document.transferTo(new File("../tmp/docFile" + documentExtension));
-      System.out.println("gere");
-      File docFile = new File("../tmp/docFile" + documentExtension);
+      // documentExtension = documentExtension.substring(documentExtension.lastIndexOf('.'));
+      // File docFile = new File("/src/main/java/com/plagarism/detect/tmp/docFile" + documentExtension);
       
-      System.out.println("Docfile " + docFile.getAbsolutePath());
-
-      try {
-         document.transferTo(docFile);
-      } catch (Exception e) {
-         e.printStackTrace();
-      }
+      // document.transferTo(docFile);
 
       Queries queries = new Queries();
+      // NOTE this needs to use .contains for some reason that I can't figure out but
+      // it is adding an extra invisible character
       if (documentExtension.contains(".docx") || documentExtension.contains(".doc")) {
          DocumentReader documentReader = new DocumentReader();
-         documentReader.setDocument(docFile);
+         // System.out.println("test1");
+         documentReader.setDocument(document);
          documentReader.findQuestions();
          queries = documentReader.getQuestionsAsQueries();
-         System.out.println(queries);
       } else if (documentExtension.contains(".txt")) {
          TextReader textReader = new TextReader();
          String docText = "";
@@ -98,17 +92,17 @@ public class ScraperController {
       } else {
          // throw new Exception("File" + documentExtension + "not a supported file type.");
       }
-      Queries queriesFound = null;
       if (!queries.isEmpty() && search) {
+         Queries queriesFound = null;
          Scraper scraper = new Scraper();
          try {
             queriesFound = scraper.searchQueries(queries);
          } catch (Exception e) {
-            System.err.println(e.getStackTrace());
+            // System.err.println(e.getStackTrace());
          }
          return queriesFound;
       }
-      return queriesFound;
+      return queries;
    }
 
    /*

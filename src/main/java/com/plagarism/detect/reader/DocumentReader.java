@@ -9,12 +9,15 @@ import com.plagarism.detect.domain.Queries;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 // imports for regex
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.springframework.web.multipart.MultipartFile;
 
 public class DocumentReader {
     License licWordToPdf;
@@ -90,6 +93,30 @@ public class DocumentReader {
             System.err.println(path); // make sure to print the error
             System.err.println("Error setting up document text. \n" +
                     "Nested Error: " + e); // make sure to print the error
+        }
+
+    }
+
+    public void setDocument(MultipartFile file) {
+        this.document = null; // reset document to ensure document isn't re-read.
+        this.queries.clear(); // clear queries for each document to not confuse where each came from.
+        try {
+            // set basic variables for document reading.
+            this.path = file.getName();
+
+            // since aspose words adds file locations before which I
+            // cannot change, I need to make a input stream which it does
+            // take, not something I can change but am upset about.
+            InputStream fileInput = file.getInputStream();
+            this.document = new Document(fileInput);
+            this.extension = this.path.substring(path.lastIndexOf("."));
+
+        } catch (Exception e) {
+            // this.path = "[NS] " + file.getName();
+            // Specifies if failure is due to unsupported types or other.
+            // System.err.println(path); // make sure to print the error
+            // System.err.println("Error setting up document text. \n" +
+            //         "Nested Error: " + e); // make sure to print the error
         }
 
     }
